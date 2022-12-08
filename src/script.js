@@ -54,14 +54,7 @@ function IronFrameGenerator(X, Y, Z, COUNT) {
         iron8.position.set(X, Y, Z + iglength / 2)
         scene.add(iron8)
 
-        // var rotateAroundObjectAxis = function(object, axis, radians) {
-        //     rotObjectMatrix = new THREE.Matrix4();
-        //     rotObjectMatrix.makeRotationAxis(axis.normalize(), radians);                
-        //     object.matrix.multiply(rotObjectMatrix);
-        //     object.rotation.setFromRotationMatrix(object.matrix);
-        // }
-        // ...
-        // rotateAroundObjectAxis(object, new THREE.Vector3(0,1,0), Math.PI/4);
+
     }
 }
 
@@ -119,50 +112,6 @@ scene.add(spotLight)
 scene.add(spotLight.target)
 
 
-// FONTS ==========================================================================================
-
-const fontLoader = new FontLoader()
-
-fontLoader.load('/fonts/helvetiker_regular.typeface.json', (font) => {
-    const textGeometry = new TextGeometry('Rock Scene', {
-        font: font,
-        size: 1,
-        height: 0.2,
-        curveSegments: 12,
-        bevelEnabled: true,
-        bevelThickness: 0.03,
-        bevelSize: 0.02,
-        bevelOffset: 0,
-        bevelSegments: 5,
-    })
-
-    const matcapTexture = textureLoader.load('/textures/matcaps/8.png')
-    const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
-    const text = new THREE.Mesh(textGeometry, material)
-    textGeometry.center()
-    text.position.set(0, wall.position.y + 2, wall.position.z + 0.6)
-    scene.add(text)
-
-    // const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45)
-    // for (let i = 0; i < 100; i++) {
-    //     const donut = new THREE.Mesh(donutGeometry, material)
-
-    //     donut.position.x = (Math.random() - 0.5) * 10
-    //     donut.position.y = (Math.random() - 0.5) * 10
-    //     donut.position.z = (Math.random() - 0.5) * 10
-
-    //     donut.rotation.x = Math.random() * Math.PI
-    //     donut.rotation.y = Math.random() * Math.PI
-
-    //     const scale = Math.random()
-    //     donut.scale.set(scale, scale, scale)
-
-    //     scene.add(donut)
-    // }
-
-})
-
-
 
 // TEXTURES ================================================================================================
 // const textureLoader = new THREE.TextureLoader()
@@ -200,43 +149,43 @@ fontLoader.load('/fonts/helvetiker_regular.typeface.json', (font) => {
 
 // MATERIALS =========================================================================================
 
-const gui2 = new dat.GUI()
-const textureLoader = new THREE.TextureLoader()
+// const gui2 = new dat.GUI()
+// const textureLoader = new THREE.TextureLoader()
 
-const doorColorTexture = textureLoader.load('/textures/door/color.jpg')
-const doorAlphaTexture = textureLoader.load('/textures/door/alpha.jpg')
-const doorAmbientOcclusionTexture = textureLoader.load('/textures/door/ambientOcclusion.jpg')
-const doorHeightTexture = textureLoader.load('/textures/door/height.jpg')
-const doorNormalTexture = textureLoader.load('/textures/door/normal.jpg')
-const doorMetalnessTexture = textureLoader.load('/textures/door/metalness.jpg')
-const doorRoughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
-const matcapTexture = textureLoader.load('/textures/matcaps/8.png')
-const gradientTexture = textureLoader.load('/textures/gradients/5.jpg')
+// const doorColorTexture = textureLoader.load('/textures/door/color.jpg')
+// const doorAlphaTexture = textureLoader.load('/textures/door/alpha.jpg')
+// const doorAmbientOcclusionTexture = textureLoader.load('/textures/door/ambientOcclusion.jpg')
+// const doorHeightTexture = textureLoader.load('/textures/door/height.jpg')
+// const doorNormalTexture = textureLoader.load('/textures/door/normal.jpg')
+// const doorMetalnessTexture = textureLoader.load('/textures/door/metalness.jpg')
+// const doorRoughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
+// const matcapTexture = textureLoader.load('/textures/matcaps/8.png')
+// const gradientTexture = textureLoader.load('/textures/gradients/5.jpg')
 
-const cubeTextureLoader = new THREE.CubeTextureLoader()
-const environmentMapTexture = cubeTextureLoader.load([
-    '/textures/environmentMaps/1/px.jpg',
-    '/textures/environmentMaps/1/nx.jpg',
-    '/textures/environmentMaps/1/py.jpg',
-    '/textures/environmentMaps/1/ny.jpg',
-    '/textures/environmentMaps/1/pz.jpg',
-    '/textures/environmentMaps/1/nz.jpg'
-])
+// const cubeTextureLoader = new THREE.CubeTextureLoader()
+// const environmentMapTexture = cubeTextureLoader.load([
+//     '/textures/environmentMaps/1/px.jpg',
+//     '/textures/environmentMaps/1/nx.jpg',
+//     '/textures/environmentMaps/1/py.jpg',
+//     '/textures/environmentMaps/1/ny.jpg',
+//     '/textures/environmentMaps/1/pz.jpg',
+//     '/textures/environmentMaps/1/nz.jpg'
+// ])
 
 
-const material = new THREE.MeshStandardMaterial()
-material.envMap = environmentMapTexture
-    // material.gradientMap = gradientTexture
-    // material.matcap = matcapTexture
-    // material.map = doorColorTexture
-    // material.color = new THREE.Color('#ff0000')
-material.transparent = true
-    // material.opacity = 0.5
-    // material.alphaMap = doorAlphaTexture
-material.side = THREE.DoubleSide
-    // material.flatShading = true
-    // material.shininess = 100
-    // material.specular = new THREE.Color(0x1188ff)
+// const material = new THREE.MeshStandardMaterial()
+// material.envMap = environmentMapTexture
+//     // material.gradientMap = gradientTexture
+//     // material.matcap = matcapTexture
+//     // material.map = doorColorTexture
+//     // material.color = new THREE.Color('#ff0000')
+// material.transparent = true
+//     // material.opacity = 0.5
+//     // material.alphaMap = doorAlphaTexture
+// material.side = THREE.DoubleSide
+//     // material.flatShading = true
+//     // material.shininess = 100
+//     // material.specular = new THREE.Color(0x1188ff)
 
 // gradientTexture.minFilter = THREE.NearestFilter
 // gradientTexture.magFilter = THREE.NearestFilter
@@ -255,26 +204,26 @@ material.side = THREE.DoubleSide
 //
 // material.alphaMap = doorAlphaTexture
 
-material.metalness = 0.7
-material.roughness = 0.2
+// material.metalness = 0.7
+// material.roughness = 0.2
 
-gui2.add(material, 'metalness').min(0).max(1).step(0.0001)
-gui2.add(material, 'roughness').min(0).max(1).step(0.0001)
+// gui2.add(material, 'metalness').min(0).max(1).step(0.0001)
+// gui2.add(material, 'roughness').min(0).max(1).step(0.0001)
 
 
-const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 64, 64), material)
-sphere.position.y = 3
-sphere.geometry.setAttribute('uv2', new THREE.BufferAttribute(sphere.geometry.attributes.uv.array, 2))
+// const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 64, 64), material)
+// sphere.position.y = 3
+// sphere.geometry.setAttribute('uv2', new THREE.BufferAttribute(sphere.geometry.attributes.uv.array, 2))
 
-const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 100, 100), material)
-plane.position.y = 5
-plane.geometry.setAttribute('uv2', new THREE.BufferAttribute(plane.geometry.attributes.uv.array, 2))
+// const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 100, 100), material)
+// plane.position.y = 5
+// plane.geometry.setAttribute('uv2', new THREE.BufferAttribute(plane.geometry.attributes.uv.array, 2))
 
-const torus = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.2, 64, 128), material)
-torus.position.y = 7
-torus.geometry.setAttribute('uv2', new THREE.BufferAttribute(torus.geometry.attributes.uv.array, 2))
+// const torus = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.2, 64, 128), material)
+// torus.position.y = 7
+// torus.geometry.setAttribute('uv2', new THREE.BufferAttribute(torus.geometry.attributes.uv.array, 2))
 
-scene.add(sphere, plane, torus)
+// scene.add(sphere, plane, torus)
 
 
 
@@ -297,28 +246,142 @@ scene.add(sphere, plane, torus)
 // const mesh = new THREE.Mesh(geometry, material)
 // scene.add(mesh)
 
-const wall = new THREE.Mesh(
-    new THREE.BoxGeometry(28, 10, 1),
-    new THREE.MeshBasicMaterial({ color: 'white' })
-)
-wall.position.set(0, 4, -4)
-scene.add(wall)
+const textureLoader = new THREE.TextureLoader()
 
+// Бэкграунд
+const wallPaper = textureLoader.load('/textures/wallpaper.jpg')
+const frontWall = new THREE.Mesh(
+    new THREE.BoxGeometry(28, 10, 1),
+    new THREE.MeshBasicMaterial({ map: wallPaper })
+)
+frontWall.position.set(0, 4, -4)
+    // colorTexture.wrapS = THREE.MirroredRepeatWrapping
+    // colorTexture.wrapT = THREE.MirroredRepeatWrapping
+    // colorTexture.repeat.x = 3
+    // colorTexture.repeat.y = 2
+    // colorTexture.offset.x = 0.5
+    // colorTexture.offset.y = 0.5
+    // colorTexture.rotation= Math.PI * 0.25
+    // colorTexture.center.x= 0.5
+    // colorTexture.center.y= 0.5
+
+//colorTexture.generateMipmaps = false // разгрузка gpu
+//colorTexture.minFilter = THREE.NearestFilter
+wallPaper.magFilter = THREE.NearestFilter
+
+const upperWall = new THREE.Mesh(
+    new THREE.BoxGeometry(30, 2, 15),
+    new THREE.MeshBasicMaterial({ color: "#212121" })
+)
+upperWall.position.set(0, 9, -9)
+
+const leftWall = new THREE.Mesh(
+    new THREE.BoxGeometry(2, 11, 15),
+    new THREE.MeshBasicMaterial({ color: "#212121" })
+)
+leftWall.position.set(14, 4, -9)
+
+const rightWall = new THREE.Mesh(
+    new THREE.BoxGeometry(2, 11, 15),
+    new THREE.MeshBasicMaterial({ color: "#212121" })
+)
+rightWall.position.set(-14, 4, -9)
+
+const backWall = new THREE.Mesh(
+    new THREE.BoxGeometry(28, 10, 1),
+    new THREE.MeshBasicMaterial({ color: "#212121" })
+)
+backWall.position.set(0, 4, -16)
+
+scene.add(frontWall, upperWall, leftWall, rightWall, backWall)
+
+// Текст на стене
+const fontLoader = new FontLoader()
+
+fontLoader.load('/fonts/helvetiker_regular.typeface.json', (font) => {
+    const textGeometry = new TextGeometry('Rock Scene', {
+        font: font,
+        size: 1,
+        height: 0.2,
+        curveSegments: 12,
+        bevelEnabled: true,
+        bevelThickness: 0.03,
+        bevelSize: 0.02,
+        bevelOffset: 0,
+        bevelSegments: 5,
+    })
+
+    const matcapTexture = textureLoader.load('/textures/matcaps/8.png')
+    const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
+    const text = new THREE.Mesh(textGeometry, material)
+    textGeometry.center()
+    text.position.set(0, frontWall.position.y + 2, frontWall.position.z + 0.6)
+    scene.add(text)
+
+    // const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45)
+    // for (let i = 0; i < 100; i++) {
+    //     const donut = new THREE.Mesh(donutGeometry, material)
+
+    //     donut.position.x = (Math.random() - 0.5) * 10
+    //     donut.position.y = (Math.random() - 0.5) * 10
+    //     donut.position.z = (Math.random() - 0.5) * 10
+
+    //     donut.rotation.x = Math.random() * Math.PI
+    //     donut.rotation.y = Math.random() * Math.PI
+
+    //     const scale = Math.random()
+    //     donut.scale.set(scale, scale, scale)
+
+    //     scene.add(donut)
+    // }
+
+})
+
+
+// Пол
 const floor = new THREE.Mesh(
-    new THREE.BoxGeometry(30, 1, 30),
+    new THREE.BoxGeometry(80, 1, 80),
     new THREE.MeshBasicMaterial({ color: 'grey' })
 )
 floor.position.set(0, -1, 0)
 scene.add(floor)
 
+// Платформа сцены
 const platform = new THREE.Mesh(
-    new THREE.CylinderGeometry(12, 12, 1, 64, 1),
+    new THREE.CylinderGeometry(14.5, 14, 1, 64, 1),
     new THREE.MeshBasicMaterial({ color: 'brown', wireframe: false })
 )
 scene.add(platform)
 
-IronFrameGenerator(0, 2, 0, 5)
+// Создание динамиков
+function MakeAcoustic(X, Y, Z, Xrot, Yrot, Sc) {
+    const groupAcoustic = new THREE.Group()
+    groupAcoustic.position.set(X, Y, Z)
+    groupAcoustic.rotateX(Xrot)
+    groupAcoustic.rotateY(Yrot)
 
+    const corob = new THREE.Mesh(new THREE.BoxGeometry(1 * Sc, 1.5 * Sc, 1 * Sc), new THREE.MeshBasicMaterial({ color: '#222422' }))
+    const guba1 = new THREE.Mesh(new THREE.TorusGeometry(0.35 * Sc, 0.05 * Sc, 16, 32), new THREE.MeshBasicMaterial({ color: '#000000' }))
+    guba1.position.set(0, -0.25 * Sc, 0.5 * Sc)
+    const guba2 = new THREE.Mesh(new THREE.TorusGeometry(0.2 * Sc, 0.04 * Sc, 16, 32), new THREE.MeshBasicMaterial({ color: '#000000' }))
+    guba2.position.set(-0.2 * Sc, 0.42 * Sc, 0.5 * Sc)
+    const guba3 = new THREE.Mesh(new THREE.TorusGeometry(0.12 * Sc, 0.03 * Sc, 16, 32), new THREE.MeshBasicMaterial({ color: '#000000' }))
+    guba3.position.set(0.25 * Sc, 0.42 * Sc, 0.5 * Sc)
+
+    groupAcoustic.add(corob, guba1, guba2, guba3)
+    scene.add(groupAcoustic)
+}
+MakeAcoustic(10.95, 2, 1, 0, 0, 2) // -Math.PI / 6
+MakeAcoustic(13, 2, 1, 0, 0, 2)
+MakeAcoustic(10.8, 4.2, 1, 0, -Math.PI / 12, 1)
+MakeAcoustic(12, 4.2, 1.3, 0, 0, 1)
+MakeAcoustic(13.2, 4.2, 1, 0, Math.PI / 12, 1)
+
+MakeAcoustic(-10.95, 2, 1, 0, 0, 2) // -Math.PI / 6
+MakeAcoustic(-13, 2, 1, 0, 0, 2)
+MakeAcoustic(-10.8, 4.2, 1, 0, Math.PI / 12, 1)
+MakeAcoustic(-12, 4.2, 1.3, 0, 0, 1)
+MakeAcoustic(-13.2, 4.2, 1, 0, -Math.PI / 12, 1)
 
 
 // GUI =======================================================================================================
@@ -431,13 +494,13 @@ const tick = () => {
     // camera.lookAt(mesh.position)
 
     // Update objects
-    sphere.rotation.y = 0.1 * elapsedTime
-    plane.rotation.y = 0.1 * elapsedTime
-    torus.rotation.y = 0.1 * elapsedTime
+    // sphere.rotation.y = 0.1 * elapsedTime
+    // plane.rotation.y = 0.1 * elapsedTime
+    // torus.rotation.y = 0.1 * elapsedTime
 
-    sphere.rotation.x = 0.15 * elapsedTime
-    plane.rotation.x = 0.15 * elapsedTime
-    torus.rotation.x = 0.15 * elapsedTime
+    // sphere.rotation.x = 0.15 * elapsedTime
+    // plane.rotation.x = 0.15 * elapsedTime
+    // torus.rotation.x = 0.15 * elapsedTime
 
     // Render
     renderer.render(scene, camera)
