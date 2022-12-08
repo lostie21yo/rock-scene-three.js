@@ -5,6 +5,7 @@ import gsap from 'gsap'
 import * as dat from 'lil-gui'
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
+import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper";
 
 // FUNCTIONS =======================================================================================================
 
@@ -52,6 +53,15 @@ function IronFrameGenerator(X, Y, Z, COUNT) {
         iron8.rotation.set(-Math.PI / 4, 0, 0)
         iron8.position.set(X, Y, Z + iglength / 2)
         scene.add(iron8)
+
+        // var rotateAroundObjectAxis = function(object, axis, radians) {
+        //     rotObjectMatrix = new THREE.Matrix4();
+        //     rotObjectMatrix.makeRotationAxis(axis.normalize(), radians);                
+        //     object.matrix.multiply(rotObjectMatrix);
+        //     object.rotation.setFromRotationMatrix(object.matrix);
+        // }
+        // ...
+        // rotateAroundObjectAxis(object, new THREE.Vector3(0,1,0), Math.PI/4);
     }
 }
 
@@ -69,14 +79,44 @@ const sizes = {
 const scene = new THREE.Scene()
 
 // Light
+const gui = new dat.GUI()
+
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
+gui.add(ambientLight, 'intensity').min(0).max(1).step(0.01)
 scene.add(ambientLight)
 
-const pointLight = new THREE.PointLight(0xffffff, 0.5)
-pointLight.x = 2
-pointLight.y = 3
-pointLight.z = 4
+const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.3)
+directionalLight.position.set(1, 0.25, 0)
+scene.add(directionalLight)
+
+const directionallightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.2)
+scene.add(directionallightHelper)
+
+// const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0.3)
+// scene.add(hemisphereLight)
+
+const pointLight = new THREE.PointLight(0xff9000, 0.5, 10, 2)
+pointLight.position.x = 1
+pointLight.position.y = -0.5
+pointLight.position.z = 1
 scene.add(pointLight)
+
+const PointLightHelper = new THREE.PointLightHelper(pointLight, 0.2)
+scene.add(PointLightHelper)
+
+const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 2, 1, 1)
+rectAreaLight.position.set(-1.5, 0, 1.5)
+rectAreaLight.lookAt(new THREE.Vector3)
+scene.add(rectAreaLight)
+
+const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight)
+scene.add(rectAreaLightHelper)
+
+const spotLight = new THREE.SpotLight(0x78ff00, 0.5, 10, Math.PI * 0.1, 0.25, 1)
+spotLight.position.set(0, 2, 3)
+spotLight.target.position.x = -0.75
+scene.add(spotLight)
+scene.add(spotLight.target)
 
 
 // FONTS ==========================================================================================
@@ -84,9 +124,9 @@ scene.add(pointLight)
 const fontLoader = new FontLoader()
 
 fontLoader.load('/fonts/helvetiker_regular.typeface.json', (font) => {
-    const textGeometry = new TextGeometry('Hello Three.js', {
+    const textGeometry = new TextGeometry('Rock Scene', {
         font: font,
-        size: 0.5,
+        size: 1,
         height: 0.2,
         curveSegments: 12,
         bevelEnabled: true,
@@ -96,11 +136,11 @@ fontLoader.load('/fonts/helvetiker_regular.typeface.json', (font) => {
         bevelSegments: 5,
     })
 
-    const matcapTexture = textureLoader.load('/textures/matcaps/1.png')
+    const matcapTexture = textureLoader.load('/textures/matcaps/8.png')
     const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
     const text = new THREE.Mesh(textGeometry, material)
-        //textGeometry.center()
-    text.position.set(5, 5, 5)
+    textGeometry.center()
+    text.position.set(0, wall.position.y + 2, wall.position.z + 0.6)
     scene.add(text)
 
     // const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45)
@@ -160,7 +200,7 @@ fontLoader.load('/fonts/helvetiker_regular.typeface.json', (font) => {
 
 // MATERIALS =========================================================================================
 
-const gui = new dat.GUI()
+const gui2 = new dat.GUI()
 const textureLoader = new THREE.TextureLoader()
 
 const doorColorTexture = textureLoader.load('/textures/door/color.jpg')
@@ -218,8 +258,8 @@ material.side = THREE.DoubleSide
 material.metalness = 0.7
 material.roughness = 0.2
 
-gui.add(material, 'metalness').min(0).max(1).step(0.0001)
-gui.add(material, 'roughness').min(0).max(1).step(0.0001)
+gui2.add(material, 'metalness').min(0).max(1).step(0.0001)
+gui2.add(material, 'roughness').min(0).max(1).step(0.0001)
 
 
 const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 64, 64), material)
