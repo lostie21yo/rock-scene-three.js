@@ -7,57 +7,6 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper";
 
-// FUNCTIONS =======================================================================================================
-
-function IronFrameGenerator(X, Y, Z, COUNT) {
-    const iglength = 1
-    const ironGeometry = new THREE.CylinderGeometry(0.05, 0.05, iglength, 12, 1)
-    const ironMaterial = new THREE.MeshBasicMaterial({ color: 'grey' })
-
-    let frame_params = [];
-
-    for (let i = 0; i < 2; i++) {
-
-        const iron1 = new THREE.Mesh(ironGeometry, ironMaterial)
-        iron1.rotation.set(Math.PI / 4, 0, 0)
-        iron1.position.set(X - iglength / 2, Y, Z)
-        scene.add(iron1)
-        const iron2 = new THREE.Mesh(ironGeometry, ironMaterial)
-        iron2.rotation.set(-Math.PI / 4, 0, 0)
-        iron2.position.set(X - iglength / 2, Y, Z)
-        scene.add(iron2)
-
-        const iron3 = new THREE.Mesh(ironGeometry, ironMaterial)
-        iron3.rotation.set(Math.PI / 4, 0, 0)
-        iron3.position.set(X + iglength / 2, Y, Z)
-        scene.add(iron3)
-        const iron4 = new THREE.Mesh(ironGeometry, ironMaterial)
-        iron4.rotation.set(-Math.PI / 4, 0, 0)
-        iron4.position.set(X + iglength / 2, Y, Z)
-        scene.add(iron4)
-
-        const iron5 = new THREE.Mesh(ironGeometry, ironMaterial)
-        iron5.rotation.set(Math.PI / 4, 0, 0)
-        iron5.position.set(X, Y, Z - iglength / 2)
-        scene.add(iron5)
-        const iron6 = new THREE.Mesh(ironGeometry, ironMaterial)
-        iron6.rotation.set(-Math.PI / 4, 0, 0)
-        iron6.position.set(X, Y, Z - iglength / 2)
-        scene.add(iron6)
-
-        const iron7 = new THREE.Mesh(ironGeometry, ironMaterial)
-        iron7.rotation.set(Math.PI / 4, 0, 0)
-        iron7.position.set(X, Y, Z + iglength / 2)
-        scene.add(iron7)
-        const iron8 = new THREE.Mesh(ironGeometry, ironMaterial)
-        iron8.rotation.set(-Math.PI / 4, 0, 0)
-        iron8.position.set(X, Y, Z + iglength / 2)
-        scene.add(iron8)
-
-
-    }
-}
-
 // SCENE & CANVAS =======================================================================================================
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -90,7 +39,7 @@ scene.add(directionallightHelper)
 
 const pointLight = new THREE.PointLight(0xff9000, 0.5, 10, 2)
 pointLight.position.x = 1
-pointLight.position.y = -0.5
+pointLight.position.y = 3
 pointLight.position.z = 1
 scene.add(pointLight)
 
@@ -98,7 +47,7 @@ const PointLightHelper = new THREE.PointLightHelper(pointLight, 0.2)
 scene.add(PointLightHelper)
 
 const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 2, 1, 1)
-rectAreaLight.position.set(-1.5, 0, 1.5)
+rectAreaLight.position.set(-1.5, 5, 1.5)
 rectAreaLight.lookAt(new THREE.Vector3)
 scene.add(rectAreaLight)
 
@@ -106,7 +55,7 @@ const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight)
 scene.add(rectAreaLightHelper)
 
 const spotLight = new THREE.SpotLight(0x78ff00, 0.5, 10, Math.PI * 0.1, 0.25, 1)
-spotLight.position.set(0, 2, 3)
+spotLight.position.set(0, 7, 3)
 spotLight.target.position.x = -0.75
 scene.add(spotLight)
 scene.add(spotLight.target)
@@ -248,140 +197,245 @@ scene.add(spotLight.target)
 
 const textureLoader = new THREE.TextureLoader()
 
-// Бэкграунд
-const wallPaper = textureLoader.load('/textures/wallpaper.jpg')
-const frontWall = new THREE.Mesh(
-    new THREE.BoxGeometry(28, 10, 1),
-    new THREE.MeshBasicMaterial({ map: wallPaper })
-)
-frontWall.position.set(0, 4, -4)
-    // colorTexture.wrapS = THREE.MirroredRepeatWrapping
-    // colorTexture.wrapT = THREE.MirroredRepeatWrapping
-    // colorTexture.repeat.x = 3
-    // colorTexture.repeat.y = 2
-    // colorTexture.offset.x = 0.5
-    // colorTexture.offset.y = 0.5
-    // colorTexture.rotation= Math.PI * 0.25
-    // colorTexture.center.x= 0.5
-    // colorTexture.center.y= 0.5
+// Пол
+function MakeFloor() {
+    const floor = new THREE.Mesh(
+        new THREE.BoxGeometry(80, 2, 80),
+        new THREE.MeshBasicMaterial({ color: 'grey' })
+    )
+    floor.position.set(0, -1, 0)
+    scene.add(floor)
+}
+MakeFloor()
 
-//colorTexture.generateMipmaps = false // разгрузка gpu
-//colorTexture.minFilter = THREE.NearestFilter
-wallPaper.magFilter = THREE.NearestFilter
+// Стены + 3D текст 
+function MakeWalls() {
+    const wallPaper = textureLoader.load('/textures/wallpaper.jpg')
+    const frontWall = new THREE.Mesh(
+        new THREE.BoxGeometry(28, 10, 1),
+        new THREE.MeshBasicMaterial({ map: wallPaper })
+    )
+    frontWall.position.set(0, 4, -4)
+        // colorTexture.wrapS = THREE.MirroredRepeatWrapping
+        // colorTexture.wrapT = THREE.MirroredRepeatWrapping
+        // colorTexture.repeat.x = 3
+        // colorTexture.repeat.y = 2
+        // colorTexture.offset.x = 0.5
+        // colorTexture.offset.y = 0.5
+        // colorTexture.rotation= Math.PI * 0.25
+        // colorTexture.center.x= 0.5
+        // colorTexture.center.y= 0.5
 
-const upperWall = new THREE.Mesh(
-    new THREE.BoxGeometry(30, 2, 15),
-    new THREE.MeshBasicMaterial({ color: "#212121" })
-)
-upperWall.position.set(0, 9, -9)
+    //colorTexture.generateMipmaps = false // разгрузка gpu
+    //colorTexture.minFilter = THREE.NearestFilter
+    wallPaper.magFilter = THREE.NearestFilter
 
-const leftWall = new THREE.Mesh(
-    new THREE.BoxGeometry(2, 11, 15),
-    new THREE.MeshBasicMaterial({ color: "#212121" })
-)
-leftWall.position.set(14, 4, -9)
+    // Текст на стене
+    const fontLoader = new FontLoader()
 
-const rightWall = new THREE.Mesh(
-    new THREE.BoxGeometry(2, 11, 15),
-    new THREE.MeshBasicMaterial({ color: "#212121" })
-)
-rightWall.position.set(-14, 4, -9)
+    fontLoader.load('/fonts/helvetiker_regular.typeface.json', (font) => {
+        const textGeometry = new TextGeometry('Rock Scene', {
+            font: font,
+            size: 1,
+            height: 0.2,
+            curveSegments: 12,
+            bevelEnabled: true,
+            bevelThickness: 0.03,
+            bevelSize: 0.02,
+            bevelOffset: 0,
+            bevelSegments: 5,
+        })
 
-const backWall = new THREE.Mesh(
-    new THREE.BoxGeometry(28, 10, 1),
-    new THREE.MeshBasicMaterial({ color: "#212121" })
-)
-backWall.position.set(0, 4, -16)
-
-scene.add(frontWall, upperWall, leftWall, rightWall, backWall)
-
-// Текст на стене
-const fontLoader = new FontLoader()
-
-fontLoader.load('/fonts/helvetiker_regular.typeface.json', (font) => {
-    const textGeometry = new TextGeometry('Rock Scene', {
-        font: font,
-        size: 1,
-        height: 0.2,
-        curveSegments: 12,
-        bevelEnabled: true,
-        bevelThickness: 0.03,
-        bevelSize: 0.02,
-        bevelOffset: 0,
-        bevelSegments: 5,
+        const matcapTexture = textureLoader.load('/textures/matcaps/8.png')
+        const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
+        const text = new THREE.Mesh(textGeometry, material)
+        textGeometry.center()
+        text.position.set(0, frontWall.position.y + 2.5, frontWall.position.z + 0.6)
+        scene.add(text)
     })
 
-    const matcapTexture = textureLoader.load('/textures/matcaps/8.png')
-    const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
-    const text = new THREE.Mesh(textGeometry, material)
-    textGeometry.center()
-    text.position.set(0, frontWall.position.y + 2, frontWall.position.z + 0.6)
-    scene.add(text)
+    const upperWall = new THREE.Mesh(
+        new THREE.BoxGeometry(30, 2, 15),
+        new THREE.MeshBasicMaterial({ color: "#212121" })
+    )
+    upperWall.position.set(0, 9, -9)
 
-    // const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45)
-    // for (let i = 0; i < 100; i++) {
-    //     const donut = new THREE.Mesh(donutGeometry, material)
+    const leftWall = new THREE.Mesh(
+        new THREE.BoxGeometry(2, 11, 15),
+        new THREE.MeshBasicMaterial({ color: "#212121" })
+    )
+    leftWall.position.set(14, 4, -9)
 
-    //     donut.position.x = (Math.random() - 0.5) * 10
-    //     donut.position.y = (Math.random() - 0.5) * 10
-    //     donut.position.z = (Math.random() - 0.5) * 10
+    const rightWall = new THREE.Mesh(
+        new THREE.BoxGeometry(2, 11, 15),
+        new THREE.MeshBasicMaterial({ color: "#212121" })
+    )
+    rightWall.position.set(-14, 4, -9)
 
-    //     donut.rotation.x = Math.random() * Math.PI
-    //     donut.rotation.y = Math.random() * Math.PI
+    const backWall = new THREE.Mesh(
+        new THREE.BoxGeometry(28, 10, 1),
+        new THREE.MeshBasicMaterial({ color: "#212121" })
+    )
+    backWall.position.set(0, 4, -16)
 
-    //     const scale = Math.random()
-    //     donut.scale.set(scale, scale, scale)
-
-    //     scene.add(donut)
-    // }
-
-})
-
-
-// Пол
-const floor = new THREE.Mesh(
-    new THREE.BoxGeometry(80, 1, 80),
-    new THREE.MeshBasicMaterial({ color: 'grey' })
-)
-floor.position.set(0, -1, 0)
-scene.add(floor)
+    scene.add(frontWall, upperWall, leftWall, rightWall, backWall)
+}
+MakeWalls()
 
 // Платформа сцены
+const groupPlatform = new THREE.Group()
 const platform = new THREE.Mesh(
     new THREE.CylinderGeometry(14.5, 14, 1, 64, 1),
     new THREE.MeshBasicMaterial({ color: 'brown', wireframe: false })
 )
-scene.add(platform)
+groupPlatform.add(platform)
+groupPlatform.position.y = 0.5
 
-// Создание динамиков
-function MakeAcoustic(X, Y, Z, Xrot, Yrot, Sc) {
+
+// Создание металлической фермы
+function MakeFrame(X, Y, Z, Zrot) {
+    const tubelength = 1
+    const fs = tubelength / 2 //frame size
+    const angle1 = Math.PI / 4
+    const angle2 = Math.PI / 2
+    const frameGeometry1 = new THREE.CylinderGeometry(0.03, 0.03, tubelength * 1.35, 12, 1)
+    const frameMaterial = new THREE.MeshStandardMaterial()
+    frameMaterial.metalness = 0.9
+    frameMaterial.roughness = 0.0
+    const groupFrame = new THREE.Group()
+    groupFrame.rotateZ(Zrot)
+
+    let frame_params1 = [
+        [angle1, 0, 0, X - fs, Y, Z],
+        [-angle1, 0, 0, X - fs, Y, Z],
+        [angle1, 0, 0, X + fs, Y, Z],
+        [-angle1, 0, 0, X + fs, Y, Z],
+        [0, 0, angle1, X, Y, Z - fs],
+        [0, 0, -angle1, X, Y, Z - fs],
+        [0, 0, angle1, X, Y, Z + fs],
+        [0, 0, -angle1, X, Y, Z + fs]
+    ];
+
+    for (let i = 0; i < frame_params1.length; i++) {
+
+        const frame = new THREE.Mesh(frameGeometry1, frameMaterial)
+        frame.rotation.set(frame_params1[i][0], frame_params1[i][1], frame_params1[i][2])
+        frame.position.set(frame_params1[i][3], frame_params1[i][4], frame_params1[i][5])
+        groupFrame.add(frame)
+    }
+
+    const frameGeometry2 = new THREE.CylinderGeometry(0.05, 0.05, tubelength, 12, 1)
+    let frame_params2 = [
+        [angle2, 0, 0, X - fs, Y + fs, Z],
+        [angle2, 0, 0, X - fs, Y - fs, Z],
+        [angle2, 0, 0, X + fs, Y + fs, Z],
+        [angle2, 0, 0, X + fs, Y - fs, Z],
+        [0, 0, angle2, X, Y - fs, Z + fs],
+        [0, 0, angle2, X, Y - fs, Z - fs],
+        [0, 0, angle2, X, Y + fs, Z + fs],
+        [0, 0, angle2, X, Y + fs, Z - fs],
+        [0, 0, 0, X - fs, Y, Z + fs],
+        [0, 0, 0, X - fs, Y, Z - fs],
+        [0, 0, 0, X + fs, Y, Z + fs],
+        [0, 0, 0, X + fs, Y, Z - fs]
+    ];
+    for (let i = 0; i < frame_params2.length; i++) {
+
+        const frame = new THREE.Mesh(frameGeometry2, frameMaterial)
+        frame.rotation.set(frame_params2[i][0], frame_params2[i][1], frame_params2[i][2])
+        frame.position.set(frame_params2[i][3], frame_params2[i][4], frame_params2[i][5])
+        groupFrame.add(frame)
+    }
+
+    scene.add(groupFrame)
+}
+
+function MakeTrusses(X, Y, Z, H, W) {
+    const groupTrusses = new THREE.Group()
+    groupTrusses.position.set(X, Y, Z)
+
+    const boxGeometry = new THREE.BoxGeometry(1, 1, 1)
+    const boxMaterial = new THREE.MeshBasicMaterial({ color: 'grey', wireframe: true })
+
+    for (let i = 0; i < H; i++) {
+        MakeFrame(X, Y + i, Z, 0)
+        MakeFrame(X + W, Y + i, Z, 0)
+    }
+    for (let i = 0; i <= W; i++) MakeFrame(X + i, Y + H, Z, 0)
+    scene.add(groupTrusses)
+}
+MakeTrusses(-16, 0.5, 0, 12, 32)
+MakeTrusses(-16, 0.5, 10, 12, 32)
+
+// Создание и размещение акустики
+function MakeSpeaker(X, Y, Z, Xrot, Yrot, Zrot, Sc) {
     const groupAcoustic = new THREE.Group()
     groupAcoustic.position.set(X, Y, Z)
-    groupAcoustic.rotateX(Xrot)
-    groupAcoustic.rotateY(Yrot)
+    groupAcoustic.rotation.set(Xrot, Yrot, Zrot)
 
     const corob = new THREE.Mesh(new THREE.BoxGeometry(1 * Sc, 1.5 * Sc, 1 * Sc), new THREE.MeshBasicMaterial({ color: '#222422' }))
     const guba1 = new THREE.Mesh(new THREE.TorusGeometry(0.35 * Sc, 0.05 * Sc, 16, 32), new THREE.MeshBasicMaterial({ color: '#000000' }))
     guba1.position.set(0, -0.25 * Sc, 0.5 * Sc)
+    const cap1 = new THREE.Mesh(new THREE.SphereGeometry(0.2 * Sc, 16, 16), new THREE.MeshBasicMaterial({ color: '#000000' }))
+    cap1.position.set(0, -0.25 * Sc, 0.38 * Sc)
+
     const guba2 = new THREE.Mesh(new THREE.TorusGeometry(0.2 * Sc, 0.04 * Sc, 16, 32), new THREE.MeshBasicMaterial({ color: '#000000' }))
     guba2.position.set(-0.2 * Sc, 0.42 * Sc, 0.5 * Sc)
+    const cap2 = new THREE.Mesh(new THREE.SphereGeometry(0.1 * Sc, 16, 16), new THREE.MeshBasicMaterial({ color: '#000000' }))
+    cap2.position.set(-0.2 * Sc, 0.42 * Sc, 0.45 * Sc)
+
     const guba3 = new THREE.Mesh(new THREE.TorusGeometry(0.12 * Sc, 0.03 * Sc, 16, 32), new THREE.MeshBasicMaterial({ color: '#000000' }))
     guba3.position.set(0.25 * Sc, 0.42 * Sc, 0.5 * Sc)
+    const cap3 = new THREE.Mesh(new THREE.SphereGeometry(0.05 * Sc, 16, 16), new THREE.MeshBasicMaterial({ color: '#000000' }))
+    cap3.position.set(0.25 * Sc, 0.42 * Sc, 0.5 * Sc)
 
-    groupAcoustic.add(corob, guba1, guba2, guba3)
-    scene.add(groupAcoustic)
+    groupAcoustic.add(corob, guba1, guba2, guba3, cap1, cap2, cap3)
+    groupPlatform.add(groupAcoustic)
+    scene.add(groupPlatform)
 }
-MakeAcoustic(10.95, 2, 1, 0, 0, 2) // -Math.PI / 6
-MakeAcoustic(13, 2, 1, 0, 0, 2)
-MakeAcoustic(10.8, 4.2, 1, 0, -Math.PI / 12, 1)
-MakeAcoustic(12, 4.2, 1.3, 0, 0, 1)
-MakeAcoustic(13.2, 4.2, 1, 0, Math.PI / 12, 1)
 
-MakeAcoustic(-10.95, 2, 1, 0, 0, 2) // -Math.PI / 6
-MakeAcoustic(-13, 2, 1, 0, 0, 2)
-MakeAcoustic(-10.8, 4.2, 1, 0, Math.PI / 12, 1)
-MakeAcoustic(-12, 4.2, 1.3, 0, 0, 1)
-MakeAcoustic(-13.2, 4.2, 1, 0, -Math.PI / 12, 1)
+function MakeAcoustic() {
+    let ap = [
+        [10.95, 2, 1, 0, 0, 0, 2],
+        [13, 2, 1, 0, 0, 0, 2],
+        [10.8, 4.2, 1, 0, -Math.PI / 12, 0, 1],
+        [12, 4.2, 1.3, 0, 0, 0, 1],
+        [13.2, 4.2, 1, 0, Math.PI / 12, 0, 1],
+        [-10.95, 2, 1, 0, 0, 0, 2],
+        [-13, 2, 1, 0, 0, 0, 2],
+        [-10.8, 4.2, 1, 0, Math.PI / 12, 0, 1],
+        [-12, 4.2, 1.3, 0, 0, 0, 1],
+        [-13.2, 4.2, 1, 0, -Math.PI / 12, 0, 1],
+        [5, 11.35, 11, Math.PI / 12, 0, 0, 1],
+        [-5, 11.35, 11, Math.PI / 12, 0, 0, 1],
+        [12, 11.35, 11, Math.PI / 12, 0, 0, 1],
+        [-12, 11.35, 11, Math.PI / 12, 0, 0, 1]
+    ]
+
+    for (let i = 0; i < ap.length; i++) {
+        MakeSpeaker(ap[i][0], ap[i][1], ap[i][2], ap[i][3], ap[i][4], ap[i][5], ap[i][6])
+    }
+}
+
+MakeAcoustic()
+
+// const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45)
+// for (let i = 0; i < 100; i++) {
+//     const donut = new THREE.Mesh(donutGeometry, material)
+
+//     donut.position.x = (Math.random() - 0.5) * 10
+//     donut.position.y = (Math.random() - 0.5) * 10
+//     donut.position.z = (Math.random() - 0.5) * 10
+
+//     donut.rotation.x = Math.random() * Math.PI
+//     donut.rotation.y = Math.random() * Math.PI
+
+//     const scale = Math.random()
+//     donut.scale.set(scale, scale, scale)
+
+//     scene.add(donut)
+// }
+
 
 
 // GUI =======================================================================================================
