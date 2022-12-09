@@ -7,6 +7,11 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper";
 
+const a90 = Math.PI / 2
+const a45 = Math.PI / 4
+const a30 = Math.PI / 6
+const a15 = Math.PI / 12
+
 // SCENE & CANVAS =======================================================================================================
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -197,6 +202,7 @@ scene.add(spotLight.target)
 
 const textureLoader = new THREE.TextureLoader()
 
+
 // Пол
 function MakeFloor() {
     const floor = new THREE.Mesh(
@@ -207,6 +213,7 @@ function MakeFloor() {
     scene.add(floor)
 }
 MakeFloor()
+
 
 // Стены + 3D текст 
 function MakeWalls() {
@@ -282,80 +289,79 @@ function MakeWalls() {
 }
 MakeWalls()
 
+
 // Платформа сцены
 const groupPlatform = new THREE.Group()
-const platform = new THREE.Mesh(
-    new THREE.CylinderGeometry(14.5, 14, 1, 64, 1),
-    new THREE.MeshBasicMaterial({ color: 'brown', wireframe: false })
-)
-groupPlatform.add(platform)
-groupPlatform.position.y = 0.5
+
+function MakePlatform() {
+    const platform = new THREE.Mesh(
+        new THREE.CylinderGeometry(14.5, 14, 1, 64, 1),
+        new THREE.MeshBasicMaterial({ color: 'brown', wireframe: false })
+    )
+    groupPlatform.add(platform)
+    groupPlatform.position.y = 0.5
+}
+MakePlatform()
 
 
 // Создание металлической фермы
-function MakeFrame(X, Y, Z, Zrot) {
-    const tubelength = 1
-    const fs = tubelength / 2 //frame size
-    const angle1 = Math.PI / 4
-    const angle2 = Math.PI / 2
-    const frameGeometry1 = new THREE.CylinderGeometry(0.03, 0.03, tubelength * 1.35, 12, 1)
-    const frameMaterial = new THREE.MeshStandardMaterial()
-    frameMaterial.metalness = 0.9
-    frameMaterial.roughness = 0.0
-    const groupFrame = new THREE.Group()
-    groupFrame.rotateZ(Zrot)
-
-    let frame_params1 = [
-        [angle1, 0, 0, X - fs, Y, Z],
-        [-angle1, 0, 0, X - fs, Y, Z],
-        [angle1, 0, 0, X + fs, Y, Z],
-        [-angle1, 0, 0, X + fs, Y, Z],
-        [0, 0, angle1, X, Y, Z - fs],
-        [0, 0, -angle1, X, Y, Z - fs],
-        [0, 0, angle1, X, Y, Z + fs],
-        [0, 0, -angle1, X, Y, Z + fs]
-    ];
-
-    for (let i = 0; i < frame_params1.length; i++) {
-
-        const frame = new THREE.Mesh(frameGeometry1, frameMaterial)
-        frame.rotation.set(frame_params1[i][0], frame_params1[i][1], frame_params1[i][2])
-        frame.position.set(frame_params1[i][3], frame_params1[i][4], frame_params1[i][5])
-        groupFrame.add(frame)
-    }
-
-    const frameGeometry2 = new THREE.CylinderGeometry(0.05, 0.05, tubelength, 12, 1)
-    let frame_params2 = [
-        [angle2, 0, 0, X - fs, Y + fs, Z],
-        [angle2, 0, 0, X - fs, Y - fs, Z],
-        [angle2, 0, 0, X + fs, Y + fs, Z],
-        [angle2, 0, 0, X + fs, Y - fs, Z],
-        [0, 0, angle2, X, Y - fs, Z + fs],
-        [0, 0, angle2, X, Y - fs, Z - fs],
-        [0, 0, angle2, X, Y + fs, Z + fs],
-        [0, 0, angle2, X, Y + fs, Z - fs],
-        [0, 0, 0, X - fs, Y, Z + fs],
-        [0, 0, 0, X - fs, Y, Z - fs],
-        [0, 0, 0, X + fs, Y, Z + fs],
-        [0, 0, 0, X + fs, Y, Z - fs]
-    ];
-    for (let i = 0; i < frame_params2.length; i++) {
-
-        const frame = new THREE.Mesh(frameGeometry2, frameMaterial)
-        frame.rotation.set(frame_params2[i][0], frame_params2[i][1], frame_params2[i][2])
-        frame.position.set(frame_params2[i][3], frame_params2[i][4], frame_params2[i][5])
-        groupFrame.add(frame)
-    }
-
-    scene.add(groupFrame)
-}
-
 function MakeTrusses(X, Y, Z, H, W) {
+    function MakeFrame(X, Y, Z, Zrot) {
+        const tubelength = 1
+        const fs = tubelength / 2 //frame size
+        const frameGeometry1 = new THREE.CylinderGeometry(0.03, 0.03, tubelength * 1.35, 12, 1)
+        const frameMaterial = new THREE.MeshStandardMaterial()
+        frameMaterial.metalness = 0.9
+        frameMaterial.roughness = 0.0
+        const groupFrame = new THREE.Group()
+        groupFrame.rotateZ(Zrot)
+
+        let frame_params1 = [
+            [a45, 0, 0, X - fs, Y, Z],
+            [-a45, 0, 0, X - fs, Y, Z],
+            [a45, 0, 0, X + fs, Y, Z],
+            [-a45, 0, 0, X + fs, Y, Z],
+            [0, 0, a45, X, Y, Z - fs],
+            [0, 0, -a45, X, Y, Z - fs],
+            [0, 0, a45, X, Y, Z + fs],
+            [0, 0, -a45, X, Y, Z + fs]
+        ];
+
+        for (let i = 0; i < frame_params1.length; i++) {
+
+            const frame = new THREE.Mesh(frameGeometry1, frameMaterial)
+            frame.rotation.set(frame_params1[i][0], frame_params1[i][1], frame_params1[i][2])
+            frame.position.set(frame_params1[i][3], frame_params1[i][4], frame_params1[i][5])
+            groupFrame.add(frame)
+        }
+
+        const frameGeometry2 = new THREE.CylinderGeometry(0.05, 0.05, tubelength, 12, 1)
+        let frame_params2 = [
+            [a90, 0, 0, X - fs, Y + fs, Z],
+            [a90, 0, 0, X - fs, Y - fs, Z],
+            [a90, 0, 0, X + fs, Y + fs, Z],
+            [a90, 0, 0, X + fs, Y - fs, Z],
+            [0, 0, a90, X, Y - fs, Z + fs],
+            [0, 0, a90, X, Y - fs, Z - fs],
+            [0, 0, a90, X, Y + fs, Z + fs],
+            [0, 0, a90, X, Y + fs, Z - fs],
+            [0, 0, 0, X - fs, Y, Z + fs],
+            [0, 0, 0, X - fs, Y, Z - fs],
+            [0, 0, 0, X + fs, Y, Z + fs],
+            [0, 0, 0, X + fs, Y, Z - fs]
+        ];
+        for (let i = 0; i < frame_params2.length; i++) {
+
+            const frame = new THREE.Mesh(frameGeometry2, frameMaterial)
+            frame.rotation.set(frame_params2[i][0], frame_params2[i][1], frame_params2[i][2])
+            frame.position.set(frame_params2[i][3], frame_params2[i][4], frame_params2[i][5])
+            groupFrame.add(frame)
+        }
+
+        scene.add(groupFrame)
+    }
     const groupTrusses = new THREE.Group()
     groupTrusses.position.set(X, Y, Z)
-
-    const boxGeometry = new THREE.BoxGeometry(1, 1, 1)
-    const boxMaterial = new THREE.MeshBasicMaterial({ color: 'grey', wireframe: true })
 
     for (let i = 0; i < H; i++) {
         MakeFrame(X, Y + i, Z, 0)
@@ -367,49 +373,50 @@ function MakeTrusses(X, Y, Z, H, W) {
 MakeTrusses(-16, 0.5, 0, 12, 32)
 MakeTrusses(-16, 0.5, 10, 12, 32)
 
+
 // Создание и размещение акустики
-function MakeSpeaker(X, Y, Z, Xrot, Yrot, Zrot, Sc) {
-    const groupAcoustic = new THREE.Group()
-    groupAcoustic.position.set(X, Y, Z)
-    groupAcoustic.rotation.set(Xrot, Yrot, Zrot)
-
-    const corob = new THREE.Mesh(new THREE.BoxGeometry(1 * Sc, 1.5 * Sc, 1 * Sc), new THREE.MeshBasicMaterial({ color: '#222422' }))
-    const guba1 = new THREE.Mesh(new THREE.TorusGeometry(0.35 * Sc, 0.05 * Sc, 16, 32), new THREE.MeshBasicMaterial({ color: '#000000' }))
-    guba1.position.set(0, -0.25 * Sc, 0.5 * Sc)
-    const cap1 = new THREE.Mesh(new THREE.SphereGeometry(0.2 * Sc, 16, 16), new THREE.MeshBasicMaterial({ color: '#000000' }))
-    cap1.position.set(0, -0.25 * Sc, 0.38 * Sc)
-
-    const guba2 = new THREE.Mesh(new THREE.TorusGeometry(0.2 * Sc, 0.04 * Sc, 16, 32), new THREE.MeshBasicMaterial({ color: '#000000' }))
-    guba2.position.set(-0.2 * Sc, 0.42 * Sc, 0.5 * Sc)
-    const cap2 = new THREE.Mesh(new THREE.SphereGeometry(0.1 * Sc, 16, 16), new THREE.MeshBasicMaterial({ color: '#000000' }))
-    cap2.position.set(-0.2 * Sc, 0.42 * Sc, 0.45 * Sc)
-
-    const guba3 = new THREE.Mesh(new THREE.TorusGeometry(0.12 * Sc, 0.03 * Sc, 16, 32), new THREE.MeshBasicMaterial({ color: '#000000' }))
-    guba3.position.set(0.25 * Sc, 0.42 * Sc, 0.5 * Sc)
-    const cap3 = new THREE.Mesh(new THREE.SphereGeometry(0.05 * Sc, 16, 16), new THREE.MeshBasicMaterial({ color: '#000000' }))
-    cap3.position.set(0.25 * Sc, 0.42 * Sc, 0.5 * Sc)
-
-    groupAcoustic.add(corob, guba1, guba2, guba3, cap1, cap2, cap3)
-    groupPlatform.add(groupAcoustic)
-    scene.add(groupPlatform)
-}
-
 function MakeAcoustic() {
+    function MakeSpeaker(X, Y, Z, Xrot, Yrot, Zrot, Sc) {
+        const groupAcoustic = new THREE.Group()
+        groupAcoustic.position.set(X, Y, Z)
+        groupAcoustic.rotation.set(Xrot, Yrot, Zrot)
+
+        const corob = new THREE.Mesh(new THREE.BoxGeometry(1 * Sc, 1.5 * Sc, 1 * Sc), new THREE.MeshBasicMaterial({ color: '#222422' }))
+        const guba1 = new THREE.Mesh(new THREE.TorusGeometry(0.35 * Sc, 0.05 * Sc, 16, 32), new THREE.MeshBasicMaterial({ color: '#000000' }))
+        guba1.position.set(0, -0.25 * Sc, 0.5 * Sc)
+        const cap1 = new THREE.Mesh(new THREE.SphereGeometry(0.2 * Sc, 16, 16), new THREE.MeshBasicMaterial({ color: '#000000' }))
+        cap1.position.set(0, -0.25 * Sc, 0.38 * Sc)
+
+        const guba2 = new THREE.Mesh(new THREE.TorusGeometry(0.2 * Sc, 0.04 * Sc, 16, 32), new THREE.MeshBasicMaterial({ color: '#000000' }))
+        guba2.position.set(-0.2 * Sc, 0.42 * Sc, 0.5 * Sc)
+        const cap2 = new THREE.Mesh(new THREE.SphereGeometry(0.1 * Sc, 16, 16), new THREE.MeshBasicMaterial({ color: '#000000' }))
+        cap2.position.set(-0.2 * Sc, 0.42 * Sc, 0.45 * Sc)
+
+        const guba3 = new THREE.Mesh(new THREE.TorusGeometry(0.12 * Sc, 0.03 * Sc, 16, 32), new THREE.MeshBasicMaterial({ color: '#000000' }))
+        guba3.position.set(0.25 * Sc, 0.42 * Sc, 0.5 * Sc)
+        const cap3 = new THREE.Mesh(new THREE.SphereGeometry(0.05 * Sc, 16, 16), new THREE.MeshBasicMaterial({ color: '#000000' }))
+        cap3.position.set(0.25 * Sc, 0.42 * Sc, 0.5 * Sc)
+
+        groupAcoustic.add(corob, guba1, guba2, guba3, cap1, cap2, cap3)
+        groupPlatform.add(groupAcoustic)
+        scene.add(groupPlatform)
+    }
+
     let ap = [
         [10.95, 2, 1, 0, 0, 0, 2],
         [13, 2, 1, 0, 0, 0, 2],
-        [10.8, 4.2, 1, 0, -Math.PI / 12, 0, 1],
+        [10.8, 4.2, 1, 0, -a15, 0, 1],
         [12, 4.2, 1.3, 0, 0, 0, 1],
-        [13.2, 4.2, 1, 0, Math.PI / 12, 0, 1],
+        [13.2, 4.2, 1, 0, a15, 0, 1],
         [-10.95, 2, 1, 0, 0, 0, 2],
         [-13, 2, 1, 0, 0, 0, 2],
-        [-10.8, 4.2, 1, 0, Math.PI / 12, 0, 1],
+        [-10.8, 4.2, 1, 0, a15, 0, 1],
         [-12, 4.2, 1.3, 0, 0, 0, 1],
-        [-13.2, 4.2, 1, 0, -Math.PI / 12, 0, 1],
-        [5, 11.35, 11, Math.PI / 12, 0, 0, 1],
-        [-5, 11.35, 11, Math.PI / 12, 0, 0, 1],
-        [12, 11.35, 11, Math.PI / 12, 0, 0, 1],
-        [-12, 11.35, 11, Math.PI / 12, 0, 0, 1]
+        [-13.2, 4.2, 1, 0, -a15, 0, 1],
+        [5, 11.35, 11, a15, 0, 0, 1],
+        [-5, 11.35, 11, a15, 0, 0, 1],
+        [12, 11.35, 11, a15, 0, 0, 1],
+        [-12, 11.35, 11, a15, 0, 0, 1]
     ]
 
     for (let i = 0; i < ap.length; i++) {
@@ -418,6 +425,58 @@ function MakeAcoustic() {
 }
 
 MakeAcoustic()
+
+
+// Создание ударной установки
+const groupDrumKit = new THREE.Group()
+const drumKitMaterial1 = new THREE.MeshStandardMaterial({ color: "red" })
+const drumKitMaterial2 = new THREE.MeshStandardMaterial({ color: "grey" })
+const drumKitMaterial3 = new THREE.MeshStandardMaterial({ color: "white" })
+drumKitMaterial1.metalness = 0.5
+drumKitMaterial1.roughness = 1
+
+function MakeDrum(X, Y, Z, Xrot, Yrot, Zrot, H, R) {
+    const groupDrum = new THREE.Group()
+    const drum = new THREE.Mesh(new THREE.CylinderGeometry(R, R, H, 64, 1), drumKitMaterial1)
+    const steelstrip = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.015, R * 1.015, H, 6, 1), drumKitMaterial2)
+    const steelcircle1 = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.03, R * 1.03, H * 0.06, 64, 1), drumKitMaterial2)
+    const steelcircle2 = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.03, R * 1.03, H * 0.06, 64, 1), drumKitMaterial2)
+    const leather = new THREE.Mesh(new THREE.CylinderGeometry(R * 0.999, R * 0.999, H * 1.061, 64, 1), drumKitMaterial3)
+
+    steelcircle1.position.y = (H / 2)
+    steelcircle2.position.y = -(H / 2)
+
+    groupDrum.add(drum, steelcircle1, steelcircle2, leather, steelstrip)
+    groupDrum.position.set(X, Y, Z)
+    groupDrum.rotation.set(Xrot, Yrot, Zrot)
+    groupDrumKit.add(groupDrum)
+}
+
+function MakeStand(X, Y, Z, Zrot, H) {
+    const groupStand = new THREE.Group()
+    const verticalStick = new THREE.Mesh(new THREE.CylinderGeometry(H * 0.03, H * 0.03, H, 64, 1), drumKitMaterial2)
+
+    groupStand.add(verticalStick)
+    groupStand.position.set(X, Y, Z)
+    groupStand.rotation.set(0, 0, Zrot)
+    groupDrumKit.add(groupStand)
+}
+
+function MakeDrumKit(X, Y, Z, Yrot, Sc) {
+    groupDrumKit.position.set(X, Y, Z)
+    groupDrumKit.scale.set(Sc, Sc, Sc)
+    groupDrumKit.rotateY(Yrot)
+    groupPlatform.add(groupDrumKit)
+
+    MakeDrum(0, 0, 0, a90, 0, 0, 1, 1)
+    MakeDrum(-1.7, 0.4, -1.2, -a15 / 1.5, 0, -a15 / 1.5, 0.9, 0.6)
+    MakeDrum(1.5, 0.5, -1.2, 0, 0, 0, 0.4, 0.6)
+    MakeDrum(0.7, 1.5, -0.2, -a30, 0, a15, 0.5, 0.4)
+    MakeDrum(-0.7, 1.5, -0.2, -a30, 0, -a15, 0.5, 0.4)
+        //MakeStand(0, 0, 3, 0, 1)
+}
+
+MakeDrumKit(0, 1.5, 8, 0, 1)
 
 // const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45)
 // for (let i = 0; i < 100; i++) {
@@ -466,8 +525,8 @@ MakeAcoustic()
 // CAMERA & RENDER & WINDOW ==============================================================================================
 // Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 1, 1000)
-camera.position.set(0, 5, 20)
-camera.lookAt(platform.position)
+camera.position.set(0, 5, 15)
+camera.lookAt(groupDrumKit.position)
 scene.add(camera)
 
 // Renderer
