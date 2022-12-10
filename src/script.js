@@ -7,6 +7,7 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper";
 
+const a180 = Math.PI
 const a90 = Math.PI / 2
 const a45 = Math.PI / 4
 const a30 = Math.PI / 6
@@ -432,9 +433,12 @@ const groupDrumKit = new THREE.Group()
 const drumKitMaterial1 = new THREE.MeshStandardMaterial({ color: "red" })
 const drumKitMaterial2 = new THREE.MeshStandardMaterial({ color: "grey" })
 const drumKitMaterial3 = new THREE.MeshStandardMaterial({ color: "white" })
+const drumKitMaterial4 = new THREE.MeshStandardMaterial({ color: "#917927" })
+const drumKitMaterial5 = new THREE.MeshStandardMaterial({ color: "black" })
 drumKitMaterial1.metalness = 0.5
 drumKitMaterial1.roughness = 1
 
+// Барабан
 function MakeDrum(X, Y, Z, Xrot, Yrot, Zrot, H, R) {
     const groupDrum = new THREE.Group()
     const drum = new THREE.Mesh(new THREE.CylinderGeometry(R, R, H, 64, 1), drumKitMaterial1)
@@ -452,31 +456,81 @@ function MakeDrum(X, Y, Z, Xrot, Yrot, Zrot, H, R) {
     groupDrumKit.add(groupDrum)
 }
 
-function MakeStand(X, Y, Z, Zrot, H) {
-    const groupStand = new THREE.Group()
-    const verticalStick = new THREE.Mesh(new THREE.CylinderGeometry(H * 0.03, H * 0.03, H, 64, 1), drumKitMaterial2)
+// Тарелка
+function MakeCymbal(X, Y, Z, Xrot, Yrot, Zrot, H, R) {
+    const groupCymbal = new THREE.Group()
+    const cymbal = new THREE.Mesh(new THREE.ConeGeometry(R, H, 64, 1), drumKitMaterial4)
 
-    groupStand.add(verticalStick)
-    groupStand.position.set(X, Y, Z)
-    groupStand.rotation.set(0, 0, Zrot)
-    groupDrumKit.add(groupStand)
+    groupCymbal.add(cymbal)
+    groupCymbal.position.set(X, Y, Z)
+    groupCymbal.rotation.set(Xrot, Yrot, Zrot)
+    groupDrumKit.add(groupCymbal)
+}
+
+function MakeStick(X, Y, Z, Xrot, Yrot, Zrot, H) {
+    const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, H, 64, 1), drumKitMaterial2)
+    stick.position.set(X, Y, Z)
+    stick.rotation.set(Xrot, Yrot, Zrot)
+
+    groupDrumKit.add(stick)
+}
+
+function MakeStickLegs(X, Y, Z, H) {
+    MakeStick(X - 0.25, Y, Z, 0, 0, -a30 * 2, 0.7)
+    MakeStick(X + 0.25, Y, Z, 0, 0, a30 * 2, 0.7)
+    MakeStick(X, Y, Z - 0.25, a30 * 2, 0, 0, 0.7)
+    MakeStick(X, Y, Z + 0.25, -a30 * 2, 0, 0, 0.7)
+    MakeStick(X, -0.63 + H / 2, Z, 0, 0, 0, H)
 }
 
 function MakeDrumKit(X, Y, Z, Yrot, Sc) {
     groupDrumKit.position.set(X, Y, Z)
     groupDrumKit.scale.set(Sc, Sc, Sc)
     groupDrumKit.rotateY(Yrot)
-    groupPlatform.add(groupDrumKit)
 
-    MakeDrum(0, 0, 0, a90, 0, 0, 1, 1)
+    // Басс-барабан
+    MakeDrum(0, 0.05, 0, a90, 0, 0, 1, 1)
+    MakeStick(-1, -0.8, 0.5, 0, 0, -a45, 0.6)
+    MakeStick(1, -0.8, 0.5, 0, 0, a45, 0.6)
+
+    // Напольный том-том
     MakeDrum(-1.7, 0.4, -1.2, -a15 / 1.5, 0, -a15 / 1.5, 0.9, 0.6)
+    MakeStick(-1.2, -0.7, -1.2, 0, 0, 0, 1.05)
+    MakeStick(-2.37, -0.47, -1.2, 0, 0, 0, 1.05)
+    MakeStick(-1.7, -0.5, -0.53, 0, 0, 0, 1.05)
+    MakeStick(-1.7, -0.5, -1.2 - 0.5, 0, 0, 0, 1.05)
+
+    // Малый барабан
     MakeDrum(1.5, 0.5, -1.2, 0, 0, 0, 0.4, 0.6)
+    MakeStickLegs(1.5, -0.8, -1.2, 1.2)
+
+    // Том-том альты
     MakeDrum(0.7, 1.5, -0.2, -a30, 0, a15, 0.5, 0.4)
     MakeDrum(-0.7, 1.5, -0.2, -a30, 0, -a15, 0.5, 0.4)
-        //MakeStand(0, 0, 3, 0, 1)
+    MakeStick(0, 1.3, 0.2, 0, 0, 0, 0.6)
+    MakeStick(0.2, 1.6, 0.1, -a15 * 4, 0, -a15 * 4, 0.47)
+    MakeStick(-0.2, 1.6, 0.1, -a15 * 4, 0, a15 * 4, 0.47)
+
+    // Большая тарелка
+    MakeCymbal(-2, 2, -0.7, -a15, 0, -a15, 0.15, 0.8)
+    MakeStick(-2.15, 1.7, -0.3, -a45, 0, -a15, 1.05)
+    MakeStickLegs(-2.25, -0.8, 0, 2.2)
+
+    // Малая тарелка (хай-хэт)
+    MakeCymbal(2.2, 1.5, -0.5, 0, 0, 0, 0.1, 0.5)
+    MakeCymbal(2.2, 1.39, -0.5, a180, 0, 0, 0.07, 0.5)
+    MakeStickLegs(2.2, -0.8, -0.5, 2.1)
+
+    // Табурет
+    const stool = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.3, 64, 1), drumKitMaterial5)
+    stool.position.set(0, 0.3, -2.2)
+    groupDrumKit.add(stool)
+    MakeStickLegs(0, -0.8, -2.2, 0.8)
+
+    groupPlatform.add(groupDrumKit)
 }
 
-MakeDrumKit(0, 1.5, 8, 0, 1)
+MakeDrumKit(-5, 1.5, 3, a30, 1)
 
 // const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45)
 // for (let i = 0; i < 100; i++) {
