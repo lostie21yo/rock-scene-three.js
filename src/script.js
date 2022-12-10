@@ -14,13 +14,7 @@ const a30 = Math.PI / 6
 const a15 = Math.PI / 12
 
 
-const drumKitColor = new THREE.MeshStandardMaterial({ color: "red" })
-const metalicMaterial = new THREE.MeshStandardMaterial({ color: "grey" })
-const drumKitLeather = new THREE.MeshStandardMaterial({ color: "white" })
-const cymbolColor = new THREE.MeshStandardMaterial({ color: "#917927" })
-const blackLeather = new THREE.MeshStandardMaterial({ color: "black" })
-drumKitColor.metalness = 0.5
-drumKitColor.roughness = 1
+
 
 
 // SCENE & CANVAS =======================================================================================================
@@ -36,79 +30,154 @@ const sizes = {
 // Scene
 const scene = new THREE.Scene()
 
-// Light
+
+
+
+
+// Light ======================================================================================
 const gui = new dat.GUI()
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.7)
 gui.add(ambientLight, 'intensity').min(0).max(1).step(0.01)
 scene.add(ambientLight)
 
-const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.3)
-directionalLight.position.set(1, 0.25, 0)
-scene.add(directionalLight)
+// const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.3)
+// directionalLight.position.set(1, 0.25, 0)
+// scene.add(directionalLight)
 
-const directionallightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.2)
-scene.add(directionallightHelper)
+// const directionallightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.2)
+// scene.add(directionallightHelper)
 
-// const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0.3)
-// scene.add(hemisphereLight)
+// // const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0.3)
+// // scene.add(hemisphereLight)
 
-const pointLight = new THREE.PointLight(0xff9000, 0.5, 10, 2)
-pointLight.position.x = 1
-pointLight.position.y = 3
-pointLight.position.z = 1
-scene.add(pointLight)
+// const pointLight = new THREE.PointLight(0xff9000, 0.5, 10, 2)
+// pointLight.position.x = 1
+// pointLight.position.y = 3
+// pointLight.position.z = 1
+// scene.add(pointLight)
 
-const PointLightHelper = new THREE.PointLightHelper(pointLight, 0.2)
-scene.add(PointLightHelper)
+// const PointLightHelper = new THREE.PointLightHelper(pointLight, 0.2)
+// scene.add(PointLightHelper)
 
-const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 2, 1, 1)
-rectAreaLight.position.set(-1.5, 5, 1.5)
-rectAreaLight.lookAt(new THREE.Vector3)
-scene.add(rectAreaLight)
+// const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 2, 1, 1)
+// rectAreaLight.position.set(-1.5, 5, 1.5)
+// rectAreaLight.lookAt(new THREE.Vector3)
+// scene.add(rectAreaLight)
 
-const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight)
-scene.add(rectAreaLightHelper)
+// const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight)
+// scene.add(rectAreaLightHelper)
 
-const spotLight = new THREE.SpotLight(0x78ff00, 0.5, 10, Math.PI * 0.1, 0.25, 1)
-spotLight.position.set(0, 7, 3)
-spotLight.target.position.x = -0.75
-scene.add(spotLight)
-scene.add(spotLight.target)
+// const spotLight = new THREE.SpotLight(0x78ff00, 0.5, 10, Math.PI * 0.1, 0.25, 1)
+// spotLight.position.set(0, 7, 3)
+// spotLight.target.position.x = -0.75
+// scene.add(spotLight)
+// scene.add(spotLight.target)
+
+
 
 
 
 // TEXTURES ================================================================================================
-// const textureLoader = new THREE.TextureLoader()
-// const colorTexture = textureLoader.load('/textures/minecraft.png')
-//     //const colorTexture = textureLoader.load('/textures/door/color.jpg')
-// const alphaTexture = textureLoader.load('/textures/door/alpha.jpg')
-// const heightTexture = textureLoader.load('/textures/door/height.jpg')
-// const normalTexture = textureLoader.load('/textures/door/normal.jpg')
-// const ambientOcclusionTexture = textureLoader.load('/textures/door/ambientOcclusion.jpg')
-// const metalnessTexture = textureLoader.load('/textures/door/metalness.jpg')
-// const roughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
 
-// // colorTexture.wrapS = THREE.MirroredRepeatWrapping
-// // colorTexture.wrapT = THREE.MirroredRepeatWrapping
-// // colorTexture.repeat.x = 3
-// // colorTexture.repeat.y = 2
-// // colorTexture.offset.x = 0.5
-// // colorTexture.offset.y = 0.5
-// // colorTexture.rotation= Math.PI * 0.25
-// // colorTexture.center.x= 0.5
-// // colorTexture.center.y= 0.5
+//const gui2 = new dat.GUI()
+const textureLoader = new THREE.TextureLoader()
+const cubeTextureLoader = new THREE.CubeTextureLoader()
+
+const environmentMapTexture = cubeTextureLoader.load([
+    '/textures/environmentMaps/1/px.jpg',
+    '/textures/environmentMaps/1/nx.jpg',
+    '/textures/environmentMaps/1/py.jpg',
+    '/textures/environmentMaps/1/ny.jpg',
+    '/textures/environmentMaps/1/pz.jpg',
+    '/textures/environmentMaps/1/nz.jpg'
+])
+
+const acousticColor = new THREE.MeshStandardMaterial({ color: "grey" })
+const acousticTexture = textureLoader.load('/textures/acousticTexture.jpg')
+acousticColor.envMap = environmentMapTexture
+acousticColor.map = acousticTexture
+acousticColor.side = THREE.DoubleSide
+acousticColor.metalness = 0
+acousticColor.roughness = 0.8
+    //gui.add(acousticColor, 'metalness').min(0).max(1).step(0.0001)
+    //gui.add(acousticColor, 'roughness').min(0).max(1).step(0.0001)
+
+const drumKitColor = new THREE.MeshStandardMaterial({ color: "red" })
+const drumRedTexture = textureLoader.load('/textures/drumRedTexture.jpg')
+drumKitColor.envMap = environmentMapTexture
+drumKitColor.map = drumRedTexture
+drumKitColor.side = THREE.DoubleSide
+drumKitColor.metalness = 0.2
+drumKitColor.roughness = 0.05
+
+const metalicMaterial = new THREE.MeshStandardMaterial()
+metalicMaterial.envMap = environmentMapTexture
+metalicMaterial.side = THREE.DoubleSide
+metalicMaterial.metalness = 0.9
+metalicMaterial.roughness = 0.1
+
+const microMaterial = new THREE.MeshStandardMaterial()
+const microTexture = textureLoader.load('/textures/microTexture.jpg')
+microMaterial.envMap = environmentMapTexture
+microMaterial.normalScale.set(4, 4)
+microMaterial.map = microTexture
+microMaterial.side = THREE.DoubleSide
+microMaterial.metalness = 0.4
+microMaterial.roughness = 0.5
+
+const drumKitLeather = new THREE.MeshStandardMaterial({ color: "white" })
+const drumLeatherTexture = textureLoader.load('/textures/drumLeatherTexture.jpg')
+drumKitLeather.envMap = environmentMapTexture
+drumKitLeather.map = drumLeatherTexture
+drumKitLeather.side = THREE.DoubleSide
+drumKitLeather.metalness = 0.05
+drumKitLeather.roughness = 0.4
+
+const cymbalColor = new THREE.MeshStandardMaterial({ color: "#fcda72" })
+const cymbalTexture = textureLoader.load('/textures/cymbalTexture.jpg')
+cymbalColor.map = cymbalTexture
+cymbalColor.envMap = environmentMapTexture
+cymbalColor.side = THREE.DoubleSide
+cymbalColor.metalness = 0.24
+cymbalColor.roughness = 0.15
+
+const blackLeather = new THREE.MeshStandardMaterial({ color: "black" })
+blackLeather.envMap = environmentMapTexture
+blackLeather.side = THREE.DoubleSide
+blackLeather.metalness = 0.3
+blackLeather.roughness = 0.15
+
+const acousticDiffuserMaterial = new THREE.MeshStandardMaterial({ color: "white" })
+const acousticDiffuserTexture = textureLoader.load('/textures/acousticDiffuserTexture.png')
+acousticDiffuserMaterial.envMap = environmentMapTexture
+acousticDiffuserMaterial.map = acousticDiffuserTexture
+acousticDiffuserMaterial.side = THREE.DoubleSide
+acousticDiffuserMaterial.metalness = 0.05
+acousticDiffuserMaterial.roughness = 0.4
+
+const settMaterial = new THREE.MeshStandardMaterial()
+const settTexture = textureLoader.load('/textures/settTexture.jpg')
+settMaterial.envMap = environmentMapTexture
+settMaterial.map = settTexture
+settMaterial.side = THREE.DoubleSide
+settMaterial.metalness = 0.05
+settMaterial.roughness = 0.4
+settTexture.wrapS = THREE.MirroredRepeatWrapping
+settTexture.wrapT = THREE.MirroredRepeatWrapping
+settTexture.repeat.x = 12
+settTexture.repeat.y = 15
+settTexture.center.x = 0.5
+settTexture.center.y = 0.5
+    // colorTexture.offset.x = 0.5
+    // colorTexture.offset.y = 0.5
+    // colorTexture.rotation= Math.PI * 0.25
 
 // //colorTexture.generateMipmaps = false // разгрузка gpu
 // //colorTexture.minFilter = THREE.NearestFilter
 // colorTexture.magFilter = THREE.NearestFilter
 
-// // Object
-// const geometry = new THREE.BoxGeometry(1, 1, 1)
-// const material = new THREE.MeshBasicMaterial({ map: colorTexture })
-// const mesh = new THREE.Mesh(geometry, material)
-// mesh.position.y = 3
-// scene.add(mesh)
+
 
 
 
@@ -192,35 +261,15 @@ scene.add(spotLight.target)
 
 
 
+
+
 // OBJECTS =======================================================================================================
-
-// const geometry = new THREE.BufferGeometry()
-
-// const count = 50;
-// const positionsArray = new Float32Array(count * 3 * 3)
-
-// for (let i = 0; i < count * 3 * 3; i++)
-// {
-//     positionsArray[i] = (Math.random() - 0.5) * 4
-// }
-
-// const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3)
-// geometry.setAttribute('position', positionsAttribute)
-
-// const material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: false })
-// const mesh = new THREE.Mesh(geometry, material)
-// scene.add(mesh)
-
-const textureLoader = new THREE.TextureLoader()
 
 
 // Пол
 function MakeFloor() {
-    const floor = new THREE.Mesh(
-        new THREE.BoxGeometry(80, 2, 80),
-        new THREE.MeshBasicMaterial({ color: 'grey' })
-    )
-    floor.position.set(0, -1, 0)
+    const floor = new THREE.Mesh(new THREE.BoxGeometry(36, 1, 40), settMaterial)
+    floor.position.set(0, -0.5, 2)
     scene.add(floor)
 }
 MakeFloor()
@@ -321,9 +370,10 @@ function MakeTrusses(X, Y, Z, H, W) {
         const tubelength = 1
         const fs = tubelength / 2 //frame size
         const frameGeometry1 = new THREE.CylinderGeometry(0.03, 0.03, tubelength * 1.35, 12, 1)
-        const frameMaterial = new THREE.MeshStandardMaterial()
-        frameMaterial.metalness = 0.9
-        frameMaterial.roughness = 0.0
+        const frameMaterial = metalicMaterial
+
+        frameMaterial.metalness = 0.8
+        frameMaterial.roughness = 0.25
         const groupFrame = new THREE.Group()
         groupFrame.rotateZ(Zrot)
 
@@ -341,6 +391,7 @@ function MakeTrusses(X, Y, Z, H, W) {
         for (let i = 0; i < frame_params1.length; i++) {
 
             const frame = new THREE.Mesh(frameGeometry1, frameMaterial)
+                //frame.geometry.setAttribute('uv2', new THREE.BufferAttribute(frame.geometry.attributes.uv.array, 2))
             frame.rotation.set(frame_params1[i][0], frame_params1[i][1], frame_params1[i][2])
             frame.position.set(frame_params1[i][3], frame_params1[i][4], frame_params1[i][5])
             groupFrame.add(frame)
@@ -392,23 +443,28 @@ function MakeAcoustic() {
         groupAcoustic.position.set(X, Y, Z)
         groupAcoustic.rotation.set(Xrot, Yrot, Zrot)
 
-        const corob = new THREE.Mesh(new THREE.BoxGeometry(1 * Sc, 1.5 * Sc, 1 * Sc), new THREE.MeshBasicMaterial({ color: '#222422' }))
-        const guba1 = new THREE.Mesh(new THREE.TorusGeometry(0.35 * Sc, 0.05 * Sc, 16, 32), new THREE.MeshBasicMaterial({ color: '#000000' }))
+        const corob = new THREE.Mesh(new THREE.BoxGeometry(1 * Sc, 1.5 * Sc, 1 * Sc), acousticColor)
+
+        const guba1 = new THREE.Mesh(new THREE.TorusGeometry(0.35 * Sc, 0.05 * Sc, 16, 32), blackLeather)
         guba1.position.set(0, -0.25 * Sc, 0.5 * Sc)
-        const cap1 = new THREE.Mesh(new THREE.SphereGeometry(0.2 * Sc, 16, 16), new THREE.MeshBasicMaterial({ color: '#000000' }))
+        const diffuser1 = new THREE.Mesh(new THREE.CircleGeometry(0.35 * Sc, 16), acousticDiffuserMaterial)
+        diffuser1.position.set(0, -0.25 * Sc, 0.51 * Sc)
+        const cap1 = new THREE.Mesh(new THREE.SphereGeometry(0.17 * Sc, 16, 16), blackLeather)
         cap1.position.set(0, -0.25 * Sc, 0.38 * Sc)
 
-        const guba2 = new THREE.Mesh(new THREE.TorusGeometry(0.2 * Sc, 0.04 * Sc, 16, 32), new THREE.MeshBasicMaterial({ color: '#000000' }))
+        const guba2 = new THREE.Mesh(new THREE.TorusGeometry(0.2 * Sc, 0.04 * Sc, 16, 32), blackLeather)
         guba2.position.set(-0.2 * Sc, 0.42 * Sc, 0.5 * Sc)
-        const cap2 = new THREE.Mesh(new THREE.SphereGeometry(0.1 * Sc, 16, 16), new THREE.MeshBasicMaterial({ color: '#000000' }))
+        const diffuser2 = new THREE.Mesh(new THREE.CircleGeometry(0.2 * Sc, 16), acousticDiffuserMaterial)
+        diffuser2.position.set(-0.2 * Sc, 0.42 * Sc, 0.51 * Sc)
+        const cap2 = new THREE.Mesh(new THREE.SphereGeometry(0.08 * Sc, 16, 16), blackLeather)
         cap2.position.set(-0.2 * Sc, 0.42 * Sc, 0.45 * Sc)
 
-        const guba3 = new THREE.Mesh(new THREE.TorusGeometry(0.12 * Sc, 0.03 * Sc, 16, 32), new THREE.MeshBasicMaterial({ color: '#000000' }))
+        const guba3 = new THREE.Mesh(new THREE.TorusGeometry(0.12 * Sc, 0.03 * Sc, 16, 32), blackLeather)
         guba3.position.set(0.25 * Sc, 0.42 * Sc, 0.5 * Sc)
-        const cap3 = new THREE.Mesh(new THREE.SphereGeometry(0.05 * Sc, 16, 16), new THREE.MeshBasicMaterial({ color: '#000000' }))
-        cap3.position.set(0.25 * Sc, 0.42 * Sc, 0.5 * Sc)
+        const diffuser3 = new THREE.Mesh(new THREE.CircleGeometry(0.12 * Sc, 16), acousticDiffuserMaterial)
+        diffuser3.position.set(0.25 * Sc, 0.42 * Sc, 0.51 * Sc)
 
-        groupAcoustic.add(corob, guba1, guba2, guba3, cap1, cap2, cap3)
+        groupAcoustic.add(corob, guba1, guba2, guba3, cap1, cap2, diffuser1, diffuser2, diffuser3)
         groupPlatform.add(groupAcoustic)
         scene.add(groupPlatform)
     }
@@ -466,7 +522,7 @@ function MakeDrumKit(X, Y, Z, Yrot, Sc) {
     // Тарелка
     function MakeCymbal(X, Y, Z, Xrot, Yrot, Zrot, H, R) {
         const groupCymbal = new THREE.Group()
-        const cymbal = new THREE.Mesh(new THREE.ConeGeometry(R, H, 64, 1), cymbolColor)
+        const cymbal = new THREE.Mesh(new THREE.ConeGeometry(R, H, 64, 1), cymbalColor)
 
         groupCymbal.add(cymbal)
         groupCymbal.position.set(X, Y, Z)
@@ -532,7 +588,7 @@ function MakeDrumKit(X, Y, Z, Yrot, Sc) {
     groupPlatform.add(groupDrumKit)
 }
 
-MakeDrumKit(6, 1.5, 5, -a30, 1)
+MakeDrumKit(5.5, 1.5, 4, -a45 / 2, 1)
 
 // Создание микрофона
 function MakeMicro(X, Y, Z, Yrot, Sc) {
@@ -542,7 +598,7 @@ function MakeMicro(X, Y, Z, Yrot, Sc) {
     const stick1 = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 2, 64), metalicMaterial)
     const stick2 = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 1, 64), metalicMaterial)
     const micro1 = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.03, 0.4, 64), blackLeather)
-    const micro2 = new THREE.Mesh(new THREE.SphereGeometry(0.06, 32, 32), metalicMaterial)
+    const micro2 = new THREE.Mesh(new THREE.SphereGeometry(0.06, 32, 32), microMaterial)
 
     stand1.position.set(0, -0.96, 0)
     stand2.position.set(0, -0.85, 0)
@@ -560,7 +616,14 @@ function MakeMicro(X, Y, Z, Yrot, Sc) {
     groupPlatform.add(groupMicro)
 }
 
-MakeMicro(0, 1.75, 11, 0, 1.3)
+MakeMicro(0, 1.75, 9, 0, 1.3)
+
+// Создание прожекторов
+function MakeSpotlight() {
+
+}
+
+MakeSpotlight()
 
 // const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45)
 // for (let i = 0; i < 100; i++) {
