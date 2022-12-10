@@ -13,6 +13,16 @@ const a45 = Math.PI / 4
 const a30 = Math.PI / 6
 const a15 = Math.PI / 12
 
+
+const drumKitColor = new THREE.MeshStandardMaterial({ color: "red" })
+const metalicMaterial = new THREE.MeshStandardMaterial({ color: "grey" })
+const drumKitLeather = new THREE.MeshStandardMaterial({ color: "white" })
+const cymbolColor = new THREE.MeshStandardMaterial({ color: "#917927" })
+const blackLeather = new THREE.MeshStandardMaterial({ color: "black" })
+drumKitColor.metalness = 0.5
+drumKitColor.roughness = 1
+
+
 // SCENE & CANVAS =======================================================================================================
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -375,7 +385,7 @@ MakeTrusses(-16, 0.5, 0, 12, 32)
 MakeTrusses(-16, 0.5, 10, 12, 32)
 
 
-// Создание и размещение акустики
+// Создание акустики
 function MakeAcoustic() {
     function MakeSpeaker(X, Y, Z, Xrot, Yrot, Zrot, Sc) {
         const groupAcoustic = new THREE.Group()
@@ -429,64 +439,56 @@ MakeAcoustic()
 
 
 // Создание ударной установки
-const groupDrumKit = new THREE.Group()
-const drumKitMaterial1 = new THREE.MeshStandardMaterial({ color: "red" })
-const drumKitMaterial2 = new THREE.MeshStandardMaterial({ color: "grey" })
-const drumKitMaterial3 = new THREE.MeshStandardMaterial({ color: "white" })
-const drumKitMaterial4 = new THREE.MeshStandardMaterial({ color: "#917927" })
-const drumKitMaterial5 = new THREE.MeshStandardMaterial({ color: "black" })
-drumKitMaterial1.metalness = 0.5
-drumKitMaterial1.roughness = 1
-
-// Барабан
-function MakeDrum(X, Y, Z, Xrot, Yrot, Zrot, H, R) {
-    const groupDrum = new THREE.Group()
-    const drum = new THREE.Mesh(new THREE.CylinderGeometry(R, R, H, 64, 1), drumKitMaterial1)
-    const steelstrip = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.015, R * 1.015, H, 6, 1), drumKitMaterial2)
-    const steelcircle1 = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.03, R * 1.03, H * 0.06, 64, 1), drumKitMaterial2)
-    const steelcircle2 = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.03, R * 1.03, H * 0.06, 64, 1), drumKitMaterial2)
-    const leather = new THREE.Mesh(new THREE.CylinderGeometry(R * 0.999, R * 0.999, H * 1.061, 64, 1), drumKitMaterial3)
-
-    steelcircle1.position.y = (H / 2)
-    steelcircle2.position.y = -(H / 2)
-
-    groupDrum.add(drum, steelcircle1, steelcircle2, leather, steelstrip)
-    groupDrum.position.set(X, Y, Z)
-    groupDrum.rotation.set(Xrot, Yrot, Zrot)
-    groupDrumKit.add(groupDrum)
-}
-
-// Тарелка
-function MakeCymbal(X, Y, Z, Xrot, Yrot, Zrot, H, R) {
-    const groupCymbal = new THREE.Group()
-    const cymbal = new THREE.Mesh(new THREE.ConeGeometry(R, H, 64, 1), drumKitMaterial4)
-
-    groupCymbal.add(cymbal)
-    groupCymbal.position.set(X, Y, Z)
-    groupCymbal.rotation.set(Xrot, Yrot, Zrot)
-    groupDrumKit.add(groupCymbal)
-}
-
-function MakeStick(X, Y, Z, Xrot, Yrot, Zrot, H) {
-    const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, H, 64, 1), drumKitMaterial2)
-    stick.position.set(X, Y, Z)
-    stick.rotation.set(Xrot, Yrot, Zrot)
-
-    groupDrumKit.add(stick)
-}
-
-function MakeStickLegs(X, Y, Z, H) {
-    MakeStick(X - 0.25, Y, Z, 0, 0, -a30 * 2, 0.7)
-    MakeStick(X + 0.25, Y, Z, 0, 0, a30 * 2, 0.7)
-    MakeStick(X, Y, Z - 0.25, a30 * 2, 0, 0, 0.7)
-    MakeStick(X, Y, Z + 0.25, -a30 * 2, 0, 0, 0.7)
-    MakeStick(X, -0.63 + H / 2, Z, 0, 0, 0, H)
-}
-
 function MakeDrumKit(X, Y, Z, Yrot, Sc) {
+    const groupDrumKit = new THREE.Group()
     groupDrumKit.position.set(X, Y, Z)
     groupDrumKit.scale.set(Sc, Sc, Sc)
     groupDrumKit.rotateY(Yrot)
+
+    // Барабан
+    function MakeDrum(X, Y, Z, Xrot, Yrot, Zrot, H, R) {
+        const groupDrum = new THREE.Group()
+        const drum = new THREE.Mesh(new THREE.CylinderGeometry(R, R, H, 64, 1), drumKitColor)
+        const steelstrip = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.015, R * 1.015, H, 6, 1), metalicMaterial)
+        const steelcircle1 = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.03, R * 1.03, H * 0.06, 64, 1), metalicMaterial)
+        const steelcircle2 = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.03, R * 1.03, H * 0.06, 64, 1), metalicMaterial)
+        const leather = new THREE.Mesh(new THREE.CylinderGeometry(R * 0.999, R * 0.999, H * 1.061, 64, 1), drumKitLeather)
+
+        steelcircle1.position.y = (H / 2)
+        steelcircle2.position.y = -(H / 2)
+
+        groupDrum.add(drum, steelcircle1, steelcircle2, leather, steelstrip)
+        groupDrum.position.set(X, Y, Z)
+        groupDrum.rotation.set(Xrot, Yrot, Zrot)
+        groupDrumKit.add(groupDrum)
+    }
+
+    // Тарелка
+    function MakeCymbal(X, Y, Z, Xrot, Yrot, Zrot, H, R) {
+        const groupCymbal = new THREE.Group()
+        const cymbal = new THREE.Mesh(new THREE.ConeGeometry(R, H, 64, 1), cymbolColor)
+
+        groupCymbal.add(cymbal)
+        groupCymbal.position.set(X, Y, Z)
+        groupCymbal.rotation.set(Xrot, Yrot, Zrot)
+        groupDrumKit.add(groupCymbal)
+    }
+
+    function MakeStick(X, Y, Z, Xrot, Yrot, Zrot, H) {
+        const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, H, 64, 1), metalicMaterial)
+        stick.position.set(X, Y, Z)
+        stick.rotation.set(Xrot, Yrot, Zrot)
+
+        groupDrumKit.add(stick)
+    }
+
+    function MakeStickLegs(X, Y, Z, H) {
+        MakeStick(X - 0.25, Y, Z, 0, 0, -a30 * 2, 0.7)
+        MakeStick(X + 0.25, Y, Z, 0, 0, a30 * 2, 0.7)
+        MakeStick(X, Y, Z - 0.25, a30 * 2, 0, 0, 0.7)
+        MakeStick(X, Y, Z + 0.25, -a30 * 2, 0, 0, 0.7)
+        MakeStick(X, -0.63 + H / 2, Z, 0, 0, 0, H)
+    }
 
     // Басс-барабан
     MakeDrum(0, 0.05, 0, a90, 0, 0, 1, 1)
@@ -522,7 +524,7 @@ function MakeDrumKit(X, Y, Z, Yrot, Sc) {
     MakeStickLegs(2.2, -0.8, -0.5, 2.1)
 
     // Табурет
-    const stool = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.3, 64, 1), drumKitMaterial5)
+    const stool = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.3, 64, 1), blackLeather)
     stool.position.set(0, 0.3, -2.2)
     groupDrumKit.add(stool)
     MakeStickLegs(0, -0.8, -2.2, 0.8)
@@ -530,7 +532,35 @@ function MakeDrumKit(X, Y, Z, Yrot, Sc) {
     groupPlatform.add(groupDrumKit)
 }
 
-MakeDrumKit(-5, 1.5, 3, a30, 1)
+MakeDrumKit(6, 1.5, 5, -a30, 1)
+
+// Создание микрофона
+function MakeMicro(X, Y, Z, Yrot, Sc) {
+    const groupMicro = new THREE.Group()
+    const stand1 = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.08, 64, 1), blackLeather)
+    const stand2 = new THREE.Mesh(new THREE.ConeGeometry(0.3, 0.15, 64, 1), blackLeather)
+    const stick1 = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 2, 64), metalicMaterial)
+    const stick2 = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 1, 64), metalicMaterial)
+    const micro1 = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.03, 0.4, 64), blackLeather)
+    const micro2 = new THREE.Mesh(new THREE.SphereGeometry(0.06, 32, 32), metalicMaterial)
+
+    stand1.position.set(0, -0.96, 0)
+    stand2.position.set(0, -0.85, 0)
+    stick1.position.set(0, 0, 0)
+    stick2.position.set(0, 1.2, -0.1)
+    stick2.rotation.set(-a45 / 2, 0, 0)
+    micro1.position.set(0, 1.65, -0.28)
+    micro1.rotation.set(-a45, 0, 0)
+    micro2.position.set(0, 1.8, -0.43)
+
+    groupMicro.add(stick1, stick2, stand1, stand2, micro1, micro2)
+    groupMicro.position.set(X, Y, Z)
+    groupMicro.rotation.set(0, Yrot, 0)
+    groupMicro.scale.set(Sc, Sc, Sc)
+    groupPlatform.add(groupMicro)
+}
+
+MakeMicro(0, 1.75, 11, 0, 1.3)
 
 // const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45)
 // for (let i = 0; i < 100; i++) {
@@ -580,7 +610,7 @@ MakeDrumKit(-5, 1.5, 3, a30, 1)
 // Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 1, 1000)
 camera.position.set(0, 5, 15)
-camera.lookAt(groupDrumKit.position)
+camera.lookAt(groupPlatform.position)
 scene.add(camera)
 
 // Renderer
