@@ -6,6 +6,7 @@ import * as dat from 'lil-gui'
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper";
+import { SpotLight } from 'three';
 
 const a180 = Math.PI
 const a90 = Math.PI / 2
@@ -32,46 +33,12 @@ const scene = new THREE.Scene()
 const gui = new dat.GUI({ width: 300 })
 
 // Scene Light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
-gui.add(ambientLight, 'intensity').min(0).max(1.3).step(0.01).name('AmbientLight intensity')
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.15)
+gui.add(ambientLight, 'intensity').min(0).max(1.5).step(0.01).name('AmbientLight intensity')
 scene.add(ambientLight)
 
-
-
-// Light ======================================================================================
-
-// const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.3)
-// directionalLight.position.set(1, 0.25, 0)
-// scene.add(directionalLight)
-
-// const directionallightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.2)
-// scene.add(directionallightHelper)
-
-// // const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0.3)
-// // scene.add(hemisphereLight)
-
-// const pointLight = new THREE.PointLight(0xff9000, 0.5, 10, 2)
-// pointLight.position.x = 1
-// pointLight.position.y = 3
-// pointLight.position.z = 1
-// scene.add(pointLight)
-
-// const PointLightHelper = new THREE.PointLightHelper(pointLight, 0.2)
-// scene.add(PointLightHelper)
-
-// const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 2, 1, 1)
-// rectAreaLight.position.set(-1.5, 5, 1.5)
-// rectAreaLight.lookAt(new THREE.Vector3)
-// scene.add(rectAreaLight)
-
-// const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight)
-// scene.add(rectAreaLightHelper)
-
-// const spotLight = new THREE.SpotLight(0x78ff00, 0.5, 10, Math.PI * 0.1, 0.25, 1)
-// spotLight.position.set(0, 7, 3)
-// spotLight.target.position.x = -0.75
-// scene.add(spotLight)
-// scene.add(spotLight.target)
+// Turn ON/OFF the spotlights (perfomance)
+const spotlightsON = false
 
 
 
@@ -81,6 +48,7 @@ scene.add(ambientLight)
 
 const textureLoader = new THREE.TextureLoader()
 const cubeTextureLoader = new THREE.CubeTextureLoader()
+const groupTextures = new THREE.Group()
 
 const environmentMapTexture = cubeTextureLoader.load([
     '/textures/environmentMaps/2/px.jpg',
@@ -163,13 +131,10 @@ settMaterial.metalness = 0.05
 settMaterial.roughness = 0.4
 settTexture.wrapS = THREE.MirroredRepeatWrapping
 settTexture.wrapT = THREE.MirroredRepeatWrapping
-settTexture.repeat.x = 12
-settTexture.repeat.y = 15
+settTexture.repeat.x = 50
+settTexture.repeat.y = 50
 settTexture.center.x = 0.5
 settTexture.center.y = 0.5
-    // colorTexture.offset.x = 0.5
-    // colorTexture.offset.y = 0.5
-    // colorTexture.rotation= Math.PI * 0.25
 
 const wallMaterial = new THREE.MeshStandardMaterial()
 const wallTexture = textureLoader.load('/textures/brickWallTexture.jpg')
@@ -213,9 +178,22 @@ laminateTexture.repeat.y = 10
 laminateTexture.center.x = 0.5
 laminateTexture.center.y = 0.5
 
-// //colorTexture.generateMipmaps = false // разгрузка gpu
-// //colorTexture.minFilter = THREE.NearestFilter
-// colorTexture.magFilter = THREE.NearestFilter
+// группа текстур
+// groupTextures.add(
+//     acousticTexture,
+//     drumRedTexture,
+//     microTexture,
+//     drumLeatherTexture,
+//     cymbalTexture,
+//     acousticDiffuserTexture,
+//     settTexture,
+//     wallTexture,
+//     ruberoidTexture,
+//     laminateTexture)
+
+groupTextures.generateMipmaps = false // разгрузка gpu
+    //groupTextures.minFilter = THREE.NearestFilter
+    //groupTextures.magFilter = THREE.NearestFilter
 
 
 
@@ -226,7 +204,7 @@ laminateTexture.center.y = 0.5
 
 // Пол
 function MakeFloor() {
-    const floor = new THREE.Mesh(new THREE.BoxGeometry(36, 2, 40), settMaterial)
+    const floor = new THREE.Mesh(new THREE.BoxGeometry(160, 2, 160), settMaterial)
     floor.position.set(0, -1, 2)
     scene.add(floor)
 }
@@ -236,9 +214,11 @@ MakeFloor()
 // Стены + 3D текст 
 function MakeWalls() {
     const wallPaper = textureLoader.load('/textures/wallpaper.jpg')
+    const backWallmaterial = new THREE.MeshStandardMaterial({ map: wallPaper })
+    backWallmaterial.roughness = 0.8
     const frontWall = new THREE.Mesh(
         new THREE.BoxGeometry(28, 10, 1),
-        new THREE.MeshBasicMaterial({ map: wallPaper })
+        backWallmaterial
     )
     frontWall.position.set(0, 4, -3)
         // colorTexture.wrapS = THREE.MirroredRepeatWrapping
@@ -386,29 +366,41 @@ function MakeAcoustic() {
         const groupAcoustic = new THREE.Group()
         groupAcoustic.position.set(X, Y, Z)
         groupAcoustic.rotation.set(Xrot, Yrot, Zrot)
+        var dynamicTimeline1 = gsap.timeline({ repeat: 1000, repeatDelay: 0.05 })
+        var dynamicTimeline2 = gsap.timeline({ repeat: 5000, repeatDelay: 0.01 })
 
         const corob = new THREE.Mesh(new THREE.BoxGeometry(1 * Sc, 1.5 * Sc, 1 * Sc), acousticColor)
 
+        const groupDynamic1 = new THREE.Group()
         const guba1 = new THREE.Mesh(new THREE.TorusGeometry(0.35 * Sc, 0.05 * Sc, 16, 32), blackLeather)
         guba1.position.set(0, -0.25 * Sc, 0.5 * Sc)
         const diffuser1 = new THREE.Mesh(new THREE.CircleGeometry(0.35 * Sc, 16), acousticDiffuserMaterial)
         diffuser1.position.set(0, -0.25 * Sc, 0.51 * Sc)
         const cap1 = new THREE.Mesh(new THREE.SphereGeometry(0.17 * Sc, 16, 16), blackLeather)
         cap1.position.set(0, -0.25 * Sc, 0.38 * Sc)
+        groupDynamic1.add(cap1, diffuser1)
+        dynamicTimeline1.to(groupDynamic1.position, { z: groupDynamic1.position.z + 0.04, duration: 0.1 });
+        dynamicTimeline1.to(groupDynamic1.position, { z: groupDynamic1.position.z + 0.04, duration: 0.1 });
 
+        const groupDynamic2 = new THREE.Group()
         const guba2 = new THREE.Mesh(new THREE.TorusGeometry(0.2 * Sc, 0.04 * Sc, 16, 32), blackLeather)
         guba2.position.set(-0.2 * Sc, 0.42 * Sc, 0.5 * Sc)
         const diffuser2 = new THREE.Mesh(new THREE.CircleGeometry(0.2 * Sc, 16), acousticDiffuserMaterial)
         diffuser2.position.set(-0.2 * Sc, 0.42 * Sc, 0.51 * Sc)
         const cap2 = new THREE.Mesh(new THREE.SphereGeometry(0.08 * Sc, 16, 16), blackLeather)
         cap2.position.set(-0.2 * Sc, 0.42 * Sc, 0.45 * Sc)
+        groupDynamic2.add(cap2, diffuser2)
+        dynamicTimeline2.to(groupDynamic2.position, { z: groupDynamic2.position.z + 0.02, duration: 0.05 });
+        dynamicTimeline2.to(groupDynamic2.position, { z: groupDynamic2.position.z + 0.02, duration: 0.05 });
 
         const guba3 = new THREE.Mesh(new THREE.TorusGeometry(0.12 * Sc, 0.03 * Sc, 16, 32), blackLeather)
         guba3.position.set(0.25 * Sc, 0.42 * Sc, 0.5 * Sc)
         const diffuser3 = new THREE.Mesh(new THREE.CircleGeometry(0.12 * Sc, 16), acousticDiffuserMaterial)
         diffuser3.position.set(0.25 * Sc, 0.42 * Sc, 0.51 * Sc)
 
-        groupAcoustic.add(corob, guba1, guba2, guba3, cap1, cap2, diffuser1, diffuser2, diffuser3)
+        //tl.to("#id", { opacity: 0, duration: 1 });
+
+        groupAcoustic.add(corob, guba1, guba2, guba3, groupDynamic1, groupDynamic2, diffuser3)
         groupPlatform.add(groupAcoustic)
 
         scene.add(groupPlatform)
@@ -581,25 +573,18 @@ function MakeSpotlight(group, X, Y, Z, Xrot, Yrot, Zrot, Sc) {
     const scolor = spotlightColors[Math.floor(Math.random() * spotlightColors.length)]
     const vectorOfLooking = new THREE.Vector3(0, 1, 0)
 
-    const rectAreaLight = new THREE.RectAreaLight(scolor, 1, 0.5, 0.5)
+    const rectAreaLight = new THREE.RectAreaLight(scolor, 3, 0.5, 0.5)
+    rectAreaLight.name = 'rectALname'
     rectAreaLight.position.set(0, 0.21, 0)
     rectAreaLight.rotation.set(a180, 0, 0)
     rectAreaLight.lookAt(vectorOfLooking)
     const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight)
 
-    const spotlightLight = new THREE.SpotLight(scolor, 3, 30, a30 * 5 / 6, 0.15, 1)
+    const spotlightLight = new THREE.SpotLight(scolor, 3, 30, a30 * 5 / 6, 0.15, 0)
+    spotlightLight.name = 'SLname'
     spotlightLight.position.set(0, 0.21, 0)
     spotlightLight.target.position.y = 1
-        //gui.add(spotlightLight, 'intensity').min(0).max(10).step(0.01).name('Spotlight intensity')
-        // const parameters = {
-        //     color: 0xff0000
-        // }
-        // gui.addColor(parameters, 'color').onChange(() => {
-        //     spotlightLight.color.set(parameters.color)
-        // })
 
-    //gsap.to(group.rotation, { duration: 10, delay: 1, x: a30 })
-    //gsap.to(group.rotation, { duration: 10, delay: 1, z: a30 })
     group.add(spotlight, spotlightRing, spotlightLight, spotlightLight.target, rectAreaLight, rectAreaLightHelper)
     groupMainSpotlight.add(holder, group)
     groupMainSpotlight.position.set(X, Y, Z)
@@ -622,9 +607,13 @@ let slparams = [
     [6, 10.65, 0.65, -a90 - a45, 0, 0, 2],
     [0, 10.65, 0.65, -a90 - a45, 0, 0, 2],
 ]
+
+
 for (let i = 0; i < 10; i++) {
     sl.push(new THREE.Group())
-    MakeSpotlight(sl[i], slparams[i][0], slparams[i][1], slparams[i][2], slparams[i][3], slparams[i][4], slparams[i][5], slparams[i][6])
+    if (spotlightsON == true) {
+        MakeSpotlight(sl[i], slparams[i][0], slparams[i][1], slparams[i][2], slparams[i][3], slparams[i][4], slparams[i][5], slparams[i][6])
+    }
 }
 
 let slnew = []
@@ -638,24 +627,15 @@ for (let i = 0; i < 5; i++) {
     scene.add(slnew[i])
 }
 
-
-
-// const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45)
-// for (let i = 0; i < 100; i++) {
-//     const donut = new THREE.Mesh(donutGeometry, material)
-
-//     donut.position.x = (Math.random() - 0.5) * 10
-//     donut.position.y = (Math.random() - 0.5) * 10
-//     donut.position.z = (Math.random() - 0.5) * 10
-
-//     donut.rotation.x = Math.random() * Math.PI
-//     donut.rotation.y = Math.random() * Math.PI
-
-//     const scale = Math.random()
-//     donut.scale.set(scale, scale, scale)
-
-//     scene.add(donut)
+// gui.add(spotlightLight, 'intensity').min(0).max(10).step(0.01).name('Spotlight intensity')
+// const parameters = {
+//     color: 0xff0000
 // }
+// gui.addColor(parameters, 'color').onChange(() => {
+//     spotlightLight.color.set(parameters.color)
+// })
+
+
 
 
 
@@ -684,10 +664,12 @@ for (let i = 0; i < 5; i++) {
 
 
 
+
+
 // CAMERA & RENDER & WINDOW ==============================================================================================
 // Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 1, 1000)
-camera.position.set(0, 5, 15)
+camera.position.set(0, 12, 25)
 camera.lookAt(groupPlatform.position)
 scene.add(camera)
 
@@ -748,34 +730,95 @@ window.addEventListener('mousemove', (event) => {
 
 
 
+
+
 // ANIMATION =======================================================================================================
 const clock = new THREE.Clock()
-
-//gsap.to(platform.rotation, {duration: 1, delay: 1, x: Math.PI})
-//gsap.to(platform.position, {duration: 1, delay: 2, x: 3})
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 
+var speedcontrol = new function() {
+    this.rotationSpeed = 0.5;
+}
+
+gui.add(speedcontrol, 'rotationSpeed', 0, 1).name('Spotlight rotation speed');
+
+var spotlightintensity = new function() {
+    this.intensity = 3;
+}
+
+gui.add(spotlightintensity, 'intensity', 0, 5).name('Spotlight intensity');
+
+//gui.add(sl[0].getObjectById(2664), 'intensity').min(0).max(5).step(0.01).name('spotlightLight intensity')
+//console.log(sl[0].getObjectByName('SLname')['intensity'])
+
+
 const tick = () => {
     const elapsedTime = clock.getElapsedTime()
 
     // Update camera
-    // mesh.rotation.y = elapsedTime;
-    // camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 2
-    // camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 2
-    // camera.position.y = cursor.y * 3
-    // camera.lookAt(mesh.position)
 
-    // Update objects
-    //sl[0].rotation.y = 0.1 * elapsedTime
-    // sl[0].rotation.x = 0.1 * elapsedTime
-    // torus.rotation.y = 0.1 * elapsedTime
+    // Update objecs
+    const XrotationCoef = speedcontrol.rotationSpeed * Math.sin(elapsedTime)
+    const ZrotationCoef = speedcontrol.rotationSpeed * Math.cos(elapsedTime)
+    const SLintensity = spotlightintensity.intensity
 
-    // sphere.rotation.x = 0.15 * elapsedTime
-    // plane.rotation.x = 0.15 * elapsedTime
-    // torus.rotation.x = 0.15 * elapsedTime
+    if (spotlightsON) {
+        sl[0].rotation.x = -XrotationCoef * 0.8
+        sl[0].rotation.z = -ZrotationCoef
+        sl[0].getObjectByName('SLname')['intensity'] = SLintensity
+        sl[0].getObjectByName('rectALname')['intensity'] = SLintensity + 1
+
+        sl[1].rotation.x = XrotationCoef
+        sl[1].rotation.z = ZrotationCoef * 0.8
+        sl[1].getObjectByName('SLname')['intensity'] = SLintensity
+        sl[1].getObjectByName('rectALname')['intensity'] = SLintensity + 1
+
+        sl[2].rotation.x = -XrotationCoef
+        sl[2].rotation.z = ZrotationCoef
+        sl[2].getObjectByName('SLname')['intensity'] = SLintensity
+        sl[2].getObjectByName('rectALname')['intensity'] = SLintensity + 1
+
+        sl[3].rotation.x = XrotationCoef * 0.8
+        sl[3].rotation.z = -ZrotationCoef
+        sl[3].getObjectByName('SLname')['intensity'] = SLintensity
+        sl[3].getObjectByName('rectALname')['intensity'] = SLintensity + 1
+
+        sl[4].rotation.x = XrotationCoef
+        sl[4].rotation.z = ZrotationCoef
+        sl[4].getObjectByName('SLname')['intensity'] = SLintensity
+        sl[4].getObjectByName('rectALname')['intensity'] = SLintensity + 1
+
+
+
+        slnew[0].rotation.y = -XrotationCoef
+        slnew[0].rotation.z = -ZrotationCoef * 0.8
+        slnew[0].getObjectByName('SLname')['intensity'] = SLintensity
+        slnew[0].getObjectByName('rectALname')['intensity'] = SLintensity + 1
+
+        slnew[1].rotation.y = XrotationCoef
+        slnew[1].rotation.z = ZrotationCoef
+        slnew[1].getObjectByName('SLname')['intensity'] = SLintensity
+        slnew[1].getObjectByName('rectALname')['intensity'] = SLintensity + 1
+
+        slnew[2].rotation.y = -XrotationCoef
+        slnew[2].rotation.z = ZrotationCoef * 0.8
+        slnew[2].getObjectByName('SLname')['intensity'] = SLintensity
+        slnew[2].getObjectByName('rectALname')['intensity'] = SLintensity + 1
+
+        slnew[3].rotation.y = XrotationCoef
+        slnew[3].rotation.z = -ZrotationCoef
+        slnew[3].getObjectByName('SLname')['intensity'] = SLintensity
+        slnew[3].getObjectByName('rectALname')['intensity'] = SLintensity + 1
+
+        slnew[4].rotation.y = XrotationCoef
+        slnew[4].rotation.z = ZrotationCoef * 0.8
+        slnew[4].getObjectByName('SLname')['intensity'] = SLintensity
+        slnew[4].getObjectByName('rectALname')['intensity'] = SLintensity + 1
+
+    }
 
     // Render
     renderer.render(scene, camera)
