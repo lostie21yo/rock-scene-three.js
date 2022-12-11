@@ -27,19 +27,18 @@ const sizes = {
     height: window.innerHeight
 }
 
-// Scene
+// Scene & GUI
 const scene = new THREE.Scene()
+const gui = new dat.GUI({ width: 300 })
 
-
+// Scene Light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
+gui.add(ambientLight, 'intensity').min(0).max(1.3).step(0.01).name('AmbientLight intensity')
+scene.add(ambientLight)
 
 
 
 // Light ======================================================================================
-const gui = new dat.GUI()
-
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.7)
-gui.add(ambientLight, 'intensity').min(0).max(1).step(0.01)
-scene.add(ambientLight)
 
 // const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.3)
 // directionalLight.position.set(1, 0.25, 0)
@@ -78,19 +77,18 @@ scene.add(ambientLight)
 
 
 
-// TEXTURES ================================================================================================
+// MATERIALS & TEXTURES =========================================================================================
 
-//const gui2 = new dat.GUI()
 const textureLoader = new THREE.TextureLoader()
 const cubeTextureLoader = new THREE.CubeTextureLoader()
 
 const environmentMapTexture = cubeTextureLoader.load([
-    '/textures/environmentMaps/1/px.jpg',
-    '/textures/environmentMaps/1/nx.jpg',
-    '/textures/environmentMaps/1/py.jpg',
-    '/textures/environmentMaps/1/ny.jpg',
-    '/textures/environmentMaps/1/pz.jpg',
-    '/textures/environmentMaps/1/nz.jpg'
+    '/textures/environmentMaps/2/px.jpg',
+    '/textures/environmentMaps/2/nx.jpg',
+    '/textures/environmentMaps/2/py.jpg',
+    '/textures/environmentMaps/2/ny.jpg',
+    '/textures/environmentMaps/2/pz.jpg',
+    '/textures/environmentMaps/2/nz.jpg'
 ])
 
 const acousticColor = new THREE.MeshStandardMaterial({ color: "grey" })
@@ -114,8 +112,8 @@ drumKitColor.roughness = 0.05
 const metalicMaterial = new THREE.MeshStandardMaterial()
 metalicMaterial.envMap = environmentMapTexture
 metalicMaterial.side = THREE.DoubleSide
-metalicMaterial.metalness = 0.9
-metalicMaterial.roughness = 0.1
+metalicMaterial.metalness = 1
+metalicMaterial.roughness = 0.0
 
 const microMaterial = new THREE.MeshStandardMaterial()
 const microTexture = textureLoader.load('/textures/microTexture.jpg')
@@ -173,91 +171,51 @@ settTexture.center.y = 0.5
     // colorTexture.offset.y = 0.5
     // colorTexture.rotation= Math.PI * 0.25
 
+const wallMaterial = new THREE.MeshStandardMaterial()
+const wallTexture = textureLoader.load('/textures/brickWallTexture.jpg')
+wallMaterial.envMap = environmentMapTexture
+wallMaterial.map = wallTexture
+wallMaterial.side = THREE.DoubleSide
+wallMaterial.metalness = 0.05
+wallMaterial.roughness = 0.4
+wallTexture.wrapS = THREE.RepeatWrapping
+wallTexture.wrapT = THREE.RepeatWrapping
+wallTexture.repeat.x = 2
+wallTexture.repeat.y = 2
+wallTexture.center.x = 0.5
+wallTexture.center.y = 0.5
+
+const ruberoidMaterial = new THREE.MeshStandardMaterial()
+const ruberoidTexture = textureLoader.load('/textures/ruberoidTexture.jpg')
+ruberoidMaterial.envMap = environmentMapTexture
+ruberoidMaterial.map = ruberoidTexture
+ruberoidMaterial.side = THREE.DoubleSide
+ruberoidMaterial.metalness = 0.05
+ruberoidMaterial.roughness = 0.7
+ruberoidTexture.wrapS = THREE.LoopRepeat
+ruberoidTexture.wrapT = THREE.LoopRepeat
+ruberoidTexture.repeat.x = 2
+ruberoidTexture.repeat.y = 2
+ruberoidTexture.center.x = 0.5
+ruberoidTexture.center.y = 0.5
+
+const laminateMaterial = new THREE.MeshStandardMaterial({ color: '#d95430' })
+const laminateTexture = textureLoader.load('/textures/laminateTexture.jpg')
+laminateMaterial.envMap = environmentMapTexture
+laminateMaterial.map = laminateTexture
+laminateMaterial.side = THREE.DoubleSide
+laminateMaterial.metalness = 0.05
+laminateMaterial.roughness = 0.95
+laminateTexture.wrapS = THREE.LoopRepeat
+laminateTexture.wrapT = THREE.LoopRepeat
+laminateTexture.repeat.x = 10
+laminateTexture.repeat.y = 10
+laminateTexture.center.x = 0.5
+laminateTexture.center.y = 0.5
+
 // //colorTexture.generateMipmaps = false // разгрузка gpu
 // //colorTexture.minFilter = THREE.NearestFilter
 // colorTexture.magFilter = THREE.NearestFilter
-
-
-
-
-
-// MATERIALS =========================================================================================
-
-// const gui2 = new dat.GUI()
-// const textureLoader = new THREE.TextureLoader()
-
-// const doorColorTexture = textureLoader.load('/textures/door/color.jpg')
-// const doorAlphaTexture = textureLoader.load('/textures/door/alpha.jpg')
-// const doorAmbientOcclusionTexture = textureLoader.load('/textures/door/ambientOcclusion.jpg')
-// const doorHeightTexture = textureLoader.load('/textures/door/height.jpg')
-// const doorNormalTexture = textureLoader.load('/textures/door/normal.jpg')
-// const doorMetalnessTexture = textureLoader.load('/textures/door/metalness.jpg')
-// const doorRoughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
-// const matcapTexture = textureLoader.load('/textures/matcaps/8.png')
-// const gradientTexture = textureLoader.load('/textures/gradients/5.jpg')
-
-// const cubeTextureLoader = new THREE.CubeTextureLoader()
-// const environmentMapTexture = cubeTextureLoader.load([
-//     '/textures/environmentMaps/1/px.jpg',
-//     '/textures/environmentMaps/1/nx.jpg',
-//     '/textures/environmentMaps/1/py.jpg',
-//     '/textures/environmentMaps/1/ny.jpg',
-//     '/textures/environmentMaps/1/pz.jpg',
-//     '/textures/environmentMaps/1/nz.jpg'
-// ])
-
-
-// const material = new THREE.MeshStandardMaterial()
-// material.envMap = environmentMapTexture
-//     // material.gradientMap = gradientTexture
-//     // material.matcap = matcapTexture
-//     // material.map = doorColorTexture
-//     // material.color = new THREE.Color('#ff0000')
-// material.transparent = true
-//     // material.opacity = 0.5
-//     // material.alphaMap = doorAlphaTexture
-// material.side = THREE.DoubleSide
-//     // material.flatShading = true
-//     // material.shininess = 100
-//     // material.specular = new THREE.Color(0x1188ff)
-
-// gradientTexture.minFilter = THREE.NearestFilter
-// gradientTexture.magFilter = THREE.NearestFilter
-// gradientTexture.generateMipmaps = false
-
-// material.aoMap = doorAmbientOcclusionTexture
-// material.aoMapIntensity = 1
-// material.displacementMap = doorHeightTexture
-// material.displacementScale = 0.05
-//
-// material.metalnessMap = doorMetalnessTexture
-// material.roughnessMap = doorRoughnessTexture
-//
-// material.normalMap = doorNormalTexture
-// material.normalScale.set(0.5, 0.5)
-//
-// material.alphaMap = doorAlphaTexture
-
-// material.metalness = 0.7
-// material.roughness = 0.2
-
-// gui2.add(material, 'metalness').min(0).max(1).step(0.0001)
-// gui2.add(material, 'roughness').min(0).max(1).step(0.0001)
-
-
-// const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 64, 64), material)
-// sphere.position.y = 3
-// sphere.geometry.setAttribute('uv2', new THREE.BufferAttribute(sphere.geometry.attributes.uv.array, 2))
-
-// const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 100, 100), material)
-// plane.position.y = 5
-// plane.geometry.setAttribute('uv2', new THREE.BufferAttribute(plane.geometry.attributes.uv.array, 2))
-
-// const torus = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.2, 64, 128), material)
-// torus.position.y = 7
-// torus.geometry.setAttribute('uv2', new THREE.BufferAttribute(torus.geometry.attributes.uv.array, 2))
-
-// scene.add(sphere, plane, torus)
 
 
 
@@ -268,8 +226,8 @@ settTexture.center.y = 0.5
 
 // Пол
 function MakeFloor() {
-    const floor = new THREE.Mesh(new THREE.BoxGeometry(36, 1, 40), settMaterial)
-    floor.position.set(0, -0.5, 2)
+    const floor = new THREE.Mesh(new THREE.BoxGeometry(36, 2, 40), settMaterial)
+    floor.position.set(0, -1, 2)
     scene.add(floor)
 }
 MakeFloor()
@@ -282,7 +240,7 @@ function MakeWalls() {
         new THREE.BoxGeometry(28, 10, 1),
         new THREE.MeshBasicMaterial({ map: wallPaper })
     )
-    frontWall.position.set(0, 4, -4)
+    frontWall.position.set(0, 4, -3)
         // colorTexture.wrapS = THREE.MirroredRepeatWrapping
         // colorTexture.wrapT = THREE.MirroredRepeatWrapping
         // colorTexture.repeat.x = 3
@@ -321,29 +279,17 @@ function MakeWalls() {
         scene.add(text)
     })
 
-    const upperWall = new THREE.Mesh(
-        new THREE.BoxGeometry(30, 2, 15),
-        new THREE.MeshBasicMaterial({ color: "#212121" })
-    )
+    const upperWall = new THREE.Mesh(new THREE.BoxGeometry(31, 2, 16), ruberoidMaterial)
     upperWall.position.set(0, 9, -9)
 
-    const leftWall = new THREE.Mesh(
-        new THREE.BoxGeometry(2, 11, 15),
-        new THREE.MeshBasicMaterial({ color: "#212121" })
-    )
+    const leftWall = new THREE.Mesh(new THREE.BoxGeometry(2, 11, 15), wallMaterial)
     leftWall.position.set(14, 4, -9)
 
-    const rightWall = new THREE.Mesh(
-        new THREE.BoxGeometry(2, 11, 15),
-        new THREE.MeshBasicMaterial({ color: "#212121" })
-    )
+    const rightWall = new THREE.Mesh(new THREE.BoxGeometry(2, 11, 15), wallMaterial)
     rightWall.position.set(-14, 4, -9)
 
-    const backWall = new THREE.Mesh(
-        new THREE.BoxGeometry(28, 10, 1),
-        new THREE.MeshBasicMaterial({ color: "#212121" })
-    )
-    backWall.position.set(0, 4, -16)
+    const backWall = new THREE.Mesh(new THREE.BoxGeometry(28, 10, 1), wallMaterial)
+    backWall.position.set(0, 4, -15)
 
     scene.add(frontWall, upperWall, leftWall, rightWall, backWall)
 }
@@ -353,15 +299,13 @@ MakeWalls()
 // Платформа сцены
 const groupPlatform = new THREE.Group()
 
-function MakePlatform() {
-    const platform = new THREE.Mesh(
-        new THREE.CylinderGeometry(14.5, 14, 1, 64, 1),
-        new THREE.MeshBasicMaterial({ color: 'brown', wireframe: false })
-    )
-    groupPlatform.add(platform)
+function MakePlatform(Rt, Rb, H) {
+    const platform1 = new THREE.Mesh(new THREE.CylinderGeometry(Rt, Rb, H, 128, 1), laminateMaterial)
+    const platform2 = new THREE.Mesh(new THREE.CylinderGeometry(Rt * 1.03, Rb * 1.03, H * 0.95, 128, 1), blackLeather)
+    groupPlatform.add(platform1, platform2)
     groupPlatform.position.y = 0.5
 }
-MakePlatform()
+MakePlatform(14.5, 14, 1)
 
 
 // Создание металлической фермы
@@ -466,6 +410,7 @@ function MakeAcoustic() {
 
         groupAcoustic.add(corob, guba1, guba2, guba3, cap1, cap2, diffuser1, diffuser2, diffuser3)
         groupPlatform.add(groupAcoustic)
+
         scene.add(groupPlatform)
     }
 
@@ -619,11 +564,81 @@ function MakeMicro(X, Y, Z, Yrot, Sc) {
 MakeMicro(0, 1.75, 9, 0, 1.3)
 
 // Создание прожекторов
-function MakeSpotlight() {
+let spotlightColors = ['#ff0000', '#ffff00', '#00ff00', '#0000ff', '#ff00ff']
 
+function MakeSpotlight(group, X, Y, Z, Xrot, Yrot, Zrot, Sc) {
+    const groupMainSpotlight = new THREE.Group()
+    const spotlight = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.4, 32, 1), blackLeather)
+    const spotlightRing = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.03, 4, 32), blackLeather)
+    const holder = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.4, 16, 1), blackLeather)
+
+    spotlight.position.set(0, 0, 0)
+    spotlightRing.position.set(0, 0.2, 0)
+    spotlightRing.rotation.set(a90, 0, 0)
+    holder.position.set(0, -0.1, 0.2)
+    holder.rotation.set(a90 + a45, 0, 0)
+
+    const scolor = spotlightColors[Math.floor(Math.random() * spotlightColors.length)]
+    const vectorOfLooking = new THREE.Vector3(0, 1, 0)
+
+    const rectAreaLight = new THREE.RectAreaLight(scolor, 1, 0.5, 0.5)
+    rectAreaLight.position.set(0, 0.21, 0)
+    rectAreaLight.rotation.set(a180, 0, 0)
+    rectAreaLight.lookAt(vectorOfLooking)
+    const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight)
+
+    const spotlightLight = new THREE.SpotLight(scolor, 3, 30, a30 * 5 / 6, 0.15, 1)
+    spotlightLight.position.set(0, 0.21, 0)
+    spotlightLight.target.position.y = 1
+        //gui.add(spotlightLight, 'intensity').min(0).max(10).step(0.01).name('Spotlight intensity')
+        // const parameters = {
+        //     color: 0xff0000
+        // }
+        // gui.addColor(parameters, 'color').onChange(() => {
+        //     spotlightLight.color.set(parameters.color)
+        // })
+
+    //gsap.to(group.rotation, { duration: 10, delay: 1, x: a30 })
+    //gsap.to(group.rotation, { duration: 10, delay: 1, z: a30 })
+    group.add(spotlight, spotlightRing, spotlightLight, spotlightLight.target, rectAreaLight, rectAreaLightHelper)
+    groupMainSpotlight.add(holder, group)
+    groupMainSpotlight.position.set(X, Y, Z)
+    groupMainSpotlight.rotation.set(Xrot, Yrot, Zrot)
+    groupMainSpotlight.scale.set(Sc, Sc, Sc)
+    groupPlatform.add(groupMainSpotlight)
 }
 
-MakeSpotlight()
+// Создание массива из групп прожекторов
+let sl = []
+let slparams = [
+    [-12, 10.65, 9.65, -a90 - a45, 0, 0, 2],
+    [12, 10.65, 9.65, -a90 - a45, 0, 0, 2],
+    [-6, 10.65, 9.65, -a90 - a45, 0, 0, 2],
+    [6, 10.65, 9.65, -a90 - a45, 0, 0, 2],
+    [0, 10.65, 9.65, -a90 - a45, 0, 0, 2],
+    [-12, 10.65, 0.65, -a90 - a45, 0, 0, 2],
+    [12, 10.65, 0.65, -a90 - a45, 0, 0, 2],
+    [-6, 10.65, 0.65, -a90 - a45, 0, 0, 2],
+    [6, 10.65, 0.65, -a90 - a45, 0, 0, 2],
+    [0, 10.65, 0.65, -a90 - a45, 0, 0, 2],
+]
+for (let i = 0; i < 10; i++) {
+    sl.push(new THREE.Group())
+    MakeSpotlight(sl[i], slparams[i][0], slparams[i][1], slparams[i][2], slparams[i][3], slparams[i][4], slparams[i][5], slparams[i][6])
+}
+
+let slnew = []
+for (let i = 5; i < 10; i++) {
+    slnew.push(sl[i])
+}
+for (let i = 0; i < 5; i++) {
+    slnew[i].position.set(slparams[i + 5][0], slparams[i + 5][1] + 0.3, slparams[i + 5][2] - 0.2)
+    slnew[i].scale.set(2, 2, 2)
+    slnew[i].rotation.set(a90 + a45, 0, 0)
+    scene.add(slnew[i])
+}
+
+
 
 // const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45)
 // for (let i = 0; i < 100; i++) {
@@ -754,8 +769,8 @@ const tick = () => {
     // camera.lookAt(mesh.position)
 
     // Update objects
-    // sphere.rotation.y = 0.1 * elapsedTime
-    // plane.rotation.y = 0.1 * elapsedTime
+    //sl[0].rotation.y = 0.1 * elapsedTime
+    // sl[0].rotation.x = 0.1 * elapsedTime
     // torus.rotation.y = 0.1 * elapsedTime
 
     // sphere.rotation.x = 0.15 * elapsedTime
