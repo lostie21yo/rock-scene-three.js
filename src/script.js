@@ -28,17 +28,23 @@ const sizes = {
     height: window.innerHeight
 }
 
-// Scene & GUI
+// Scene & Creating GUI
 const scene = new THREE.Scene()
 const gui = new dat.GUI({ width: 300 })
+var spotlightsON = confirm("Доброго времени суток!\n\nЕсли желаете открыть сцену с анимацией освещения (значительно влияет на производительность), нажмите 'OK'\n");
 
-// Scene Light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.15)
-gui.add(ambientLight, 'intensity').min(0).max(1.5).step(0.01).name('AmbientLight intensity')
-scene.add(ambientLight)
-
-// Turn ON/OFF the spotlights (perfomance)
-const spotlightsON = false
+// Scene global light
+if (spotlightsON) {
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.15)
+    scene.add(ambientLight)
+        // регулировка яркости глобального освещения
+    gui.add(ambientLight, 'intensity').min(0).max(1).step(0.01).name('AmbientLight intensity')
+} else {
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7)
+    scene.add(ambientLight)
+        // регулировка яркости глобального освещения
+    gui.add(ambientLight, 'intensity').min(0).max(1.5).step(0.01).name('AmbientLight intensity')
+}
 
 
 
@@ -59,6 +65,8 @@ const environmentMapTexture = cubeTextureLoader.load([
     '/textures/environmentMaps/2/nz.jpg'
 ])
 
+//const simpleShadow = textureLoader.load('/textures/simpleShadow.jpg')
+
 const acousticColor = new THREE.MeshStandardMaterial({ color: "grey" })
 const acousticTexture = textureLoader.load('/textures/acousticTexture.jpg')
 acousticColor.envMap = environmentMapTexture
@@ -69,13 +77,19 @@ acousticColor.roughness = 0.8
     //gui.add(acousticColor, 'metalness').min(0).max(1).step(0.0001)
     //gui.add(acousticColor, 'roughness').min(0).max(1).step(0.0001)
 
-const drumKitColor = new THREE.MeshStandardMaterial({ color: "red" })
+const drumKitColor = new THREE.MeshStandardMaterial({ color: 0x00474d })
 const drumRedTexture = textureLoader.load('/textures/drumRedTexture.jpg')
 drumKitColor.envMap = environmentMapTexture
 drumKitColor.map = drumRedTexture
 drumKitColor.side = THREE.DoubleSide
 drumKitColor.metalness = 0.2
 drumKitColor.roughness = 0.05
+const params = {
+    color: 0x00474d
+}
+gui.addColor(params, 'color').onChange(() => {
+    drumKitColor.color.set(params.color)
+}).name('Drum kit color')
 
 const metalicMaterial = new THREE.MeshStandardMaterial()
 metalicMaterial.envMap = environmentMapTexture
@@ -149,6 +163,7 @@ wallTexture.repeat.x = 2
 wallTexture.repeat.y = 2
 wallTexture.center.x = 0.5
 wallTexture.center.y = 0.5
+gui.add(wallMaterial, 'wireframe')
 
 const ruberoidMaterial = new THREE.MeshStandardMaterial()
 const ruberoidTexture = textureLoader.load('/textures/ruberoidTexture.jpg')
@@ -178,23 +193,9 @@ laminateTexture.repeat.y = 10
 laminateTexture.center.x = 0.5
 laminateTexture.center.y = 0.5
 
-// группа текстур
-// groupTextures.add(
-//     acousticTexture,
-//     drumRedTexture,
-//     microTexture,
-//     drumLeatherTexture,
-//     cymbalTexture,
-//     acousticDiffuserTexture,
-//     settTexture,
-//     wallTexture,
-//     ruberoidTexture,
-//     laminateTexture)
-
 groupTextures.generateMipmaps = false // разгрузка gpu
     //groupTextures.minFilter = THREE.NearestFilter
     //groupTextures.magFilter = THREE.NearestFilter
-
 
 
 
@@ -206,7 +207,9 @@ groupTextures.generateMipmaps = false // разгрузка gpu
 function MakeFloor() {
     const floor = new THREE.Mesh(new THREE.BoxGeometry(160, 2, 160), settMaterial)
     floor.position.set(0, -1, 2)
+    floor.receiveShadow = true
     scene.add(floor)
+    gui.add(floor, 'visible')
 }
 MakeFloor()
 
@@ -220,6 +223,8 @@ function MakeWalls() {
         new THREE.BoxGeometry(28, 10, 1),
         backWallmaterial
     )
+    frontWall.receiveShadow = true
+    frontWall.castShadow = true
     frontWall.position.set(0, 4, -3)
         // colorTexture.wrapS = THREE.MirroredRepeatWrapping
         // colorTexture.wrapT = THREE.MirroredRepeatWrapping
@@ -255,21 +260,31 @@ function MakeWalls() {
         const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
         const text = new THREE.Mesh(textGeometry, material)
         textGeometry.center()
+        textGeometry.receiveShadow = true
+        textGeometry.castShadow = true
         text.position.set(0, frontWall.position.y + 2.5, frontWall.position.z + 0.6)
         scene.add(text)
     })
 
     const upperWall = new THREE.Mesh(new THREE.BoxGeometry(31, 2, 16), ruberoidMaterial)
     upperWall.position.set(0, 9, -9)
+    upperWall.receiveShadow = true
+    upperWall.castShadow = true
 
     const leftWall = new THREE.Mesh(new THREE.BoxGeometry(2, 11, 15), wallMaterial)
     leftWall.position.set(14, 4, -9)
+    leftWall.receiveShadow = true
+    leftWall.castShadow = true
 
     const rightWall = new THREE.Mesh(new THREE.BoxGeometry(2, 11, 15), wallMaterial)
     rightWall.position.set(-14, 4, -9)
+    rightWall.receiveShadow = true
+    rightWall.castShadow = true
 
     const backWall = new THREE.Mesh(new THREE.BoxGeometry(28, 10, 1), wallMaterial)
     backWall.position.set(0, 4, -15)
+    backWall.receiveShadow = true
+    backWall.castShadow = true
 
     scene.add(frontWall, upperWall, leftWall, rightWall, backWall)
 }
@@ -283,6 +298,11 @@ function MakePlatform(Rt, Rb, H) {
     const platform1 = new THREE.Mesh(new THREE.CylinderGeometry(Rt, Rb, H, 128, 1), laminateMaterial)
     const platform2 = new THREE.Mesh(new THREE.CylinderGeometry(Rt * 1.03, Rb * 1.03, H * 0.95, 128, 1), blackLeather)
     groupPlatform.add(platform1, platform2)
+    platform1.receiveShadow = true
+    platform1.castShadow = true
+    platform2.receiveShadow = true
+    platform2.castShadow = true
+
     groupPlatform.position.y = 0.5
 }
 MakePlatform(14.5, 14, 1)
@@ -315,6 +335,7 @@ function MakeTrusses(X, Y, Z, H, W) {
         for (let i = 0; i < frame_params1.length; i++) {
 
             const frame = new THREE.Mesh(frameGeometry1, frameMaterial)
+            frame.castShadow = true
                 //frame.geometry.setAttribute('uv2', new THREE.BufferAttribute(frame.geometry.attributes.uv.array, 2))
             frame.rotation.set(frame_params1[i][0], frame_params1[i][1], frame_params1[i][2])
             frame.position.set(frame_params1[i][3], frame_params1[i][4], frame_params1[i][5])
@@ -370,6 +391,7 @@ function MakeAcoustic() {
         var dynamicTimeline2 = gsap.timeline({ repeat: 5000, repeatDelay: 0.01 })
 
         const corob = new THREE.Mesh(new THREE.BoxGeometry(1 * Sc, 1.5 * Sc, 1 * Sc), acousticColor)
+        corob.castShadow = true
 
         const groupDynamic1 = new THREE.Group()
         const guba1 = new THREE.Mesh(new THREE.TorusGeometry(0.35 * Sc, 0.05 * Sc, 16, 32), blackLeather)
@@ -450,6 +472,12 @@ function MakeDrumKit(X, Y, Z, Yrot, Sc) {
         steelcircle1.position.y = (H / 2)
         steelcircle2.position.y = -(H / 2)
 
+        drum.castShadow = true
+        steelstrip.castShadow = true
+        steelcircle1.castShadow = true
+        steelcircle2.castShadow = true
+        leather.castShadow = true
+
         groupDrum.add(drum, steelcircle1, steelcircle2, leather, steelstrip)
         groupDrum.position.set(X, Y, Z)
         groupDrum.rotation.set(Xrot, Yrot, Zrot)
@@ -460,6 +488,7 @@ function MakeDrumKit(X, Y, Z, Yrot, Sc) {
     function MakeCymbal(X, Y, Z, Xrot, Yrot, Zrot, H, R) {
         const groupCymbal = new THREE.Group()
         const cymbal = new THREE.Mesh(new THREE.ConeGeometry(R, H, 64, 1), cymbalColor)
+        cymbal.castShadow = true
 
         groupCymbal.add(cymbal)
         groupCymbal.position.set(X, Y, Z)
@@ -471,6 +500,7 @@ function MakeDrumKit(X, Y, Z, Yrot, Sc) {
         const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, H, 64, 1), metalicMaterial)
         stick.position.set(X, Y, Z)
         stick.rotation.set(Xrot, Yrot, Zrot)
+        stick.castShadow = true
 
         groupDrumKit.add(stick)
     }
@@ -519,6 +549,7 @@ function MakeDrumKit(X, Y, Z, Yrot, Sc) {
     // Табурет
     const stool = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.3, 64, 1), blackLeather)
     stool.position.set(0, 0.3, -2.2)
+    stool.castShadow = true
     groupDrumKit.add(stool)
     MakeStickLegs(0, -0.8, -2.2, 0.8)
 
@@ -538,13 +569,19 @@ function MakeMicro(X, Y, Z, Yrot, Sc) {
     const micro2 = new THREE.Mesh(new THREE.SphereGeometry(0.06, 32, 32), microMaterial)
 
     stand1.position.set(0, -0.96, 0)
+    stand1.castShadow = true
     stand2.position.set(0, -0.85, 0)
+    stand2.castShadow = true
     stick1.position.set(0, 0, 0)
+    stick1.castShadow = true
     stick2.position.set(0, 1.2, -0.1)
     stick2.rotation.set(-a45 / 2, 0, 0)
+    stick2.castShadow = true
     micro1.position.set(0, 1.65, -0.28)
     micro1.rotation.set(-a45, 0, 0)
+    micro1.castShadow = true
     micro2.position.set(0, 1.8, -0.43)
+    micro2.castShadow = true
 
     groupMicro.add(stick1, stick2, stand1, stand2, micro1, micro2)
     groupMicro.position.set(X, Y, Z)
@@ -558,7 +595,7 @@ MakeMicro(0, 1.75, 9, 0, 1.3)
 // Создание прожекторов
 let spotlightColors = ['#ff0000', '#ffff00', '#00ff00', '#0000ff', '#ff00ff']
 
-function MakeSpotlight(group, X, Y, Z, Xrot, Yrot, Zrot, Sc) {
+function MakeSpotlight(group, lightsON, X, Y, Z, Xrot, Yrot, Zrot, Sc) {
     const groupMainSpotlight = new THREE.Group()
     const spotlight = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.4, 32, 1), blackLeather)
     const spotlightRing = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.03, 4, 32), blackLeather)
@@ -573,19 +610,28 @@ function MakeSpotlight(group, X, Y, Z, Xrot, Yrot, Zrot, Sc) {
     const scolor = spotlightColors[Math.floor(Math.random() * spotlightColors.length)]
     const vectorOfLooking = new THREE.Vector3(0, 1, 0)
 
-    const rectAreaLight = new THREE.RectAreaLight(scolor, 3, 0.5, 0.5)
-    rectAreaLight.name = 'rectALname'
-    rectAreaLight.position.set(0, 0.21, 0)
-    rectAreaLight.rotation.set(a180, 0, 0)
-    rectAreaLight.lookAt(vectorOfLooking)
-    const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight)
+    if (lightsON) {
+        const rectAreaLight = new THREE.RectAreaLight(scolor, 1, 0.5, 0.5)
+        rectAreaLight.name = 'rectALname'
+        rectAreaLight.position.set(0, 0.21, 0)
+        rectAreaLight.rotation.set(a180, 0, 0)
+        rectAreaLight.lookAt(vectorOfLooking)
+        const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight)
 
-    const spotlightLight = new THREE.SpotLight(scolor, 3, 30, a30 * 5 / 6, 0.15, 0)
-    spotlightLight.name = 'SLname'
-    spotlightLight.position.set(0, 0.21, 0)
-    spotlightLight.target.position.y = 1
+        const spotlightLight = new THREE.SpotLight(scolor, 3, 70, a30 * 5 / 6, 0.15, 0)
+        spotlightLight.name = 'SLname'
+        spotlightLight.castShadow = true
+        spotlightLight.shadow.mapSize.width = 1024
+        spotlightLight.shadow.mapSize.height = 1024
+        spotlightLight.shadow.camera.fov = 30
+        spotlightLight.shadow.camera.near = 1
+        spotlightLight.shadow.camera.far = 6
+        spotlightLight.position.set(0, 0.21, 0)
+        spotlightLight.target.position.y = 1
+        group.add(spotlightLight, spotlightLight.target, rectAreaLight, rectAreaLightHelper)
+    }
 
-    group.add(spotlight, spotlightRing, spotlightLight, spotlightLight.target, rectAreaLight, rectAreaLightHelper)
+    group.add(spotlight, spotlightRing)
     groupMainSpotlight.add(holder, group)
     groupMainSpotlight.position.set(X, Y, Z)
     groupMainSpotlight.rotation.set(Xrot, Yrot, Zrot)
@@ -611,9 +657,7 @@ let slparams = [
 
 for (let i = 0; i < 10; i++) {
     sl.push(new THREE.Group())
-    if (spotlightsON == true) {
-        MakeSpotlight(sl[i], slparams[i][0], slparams[i][1], slparams[i][2], slparams[i][3], slparams[i][4], slparams[i][5], slparams[i][6])
-    }
+    MakeSpotlight(sl[i], spotlightsON, slparams[i][0], slparams[i][1], slparams[i][2], slparams[i][3], slparams[i][4], slparams[i][5], slparams[i][6])
 }
 
 let slnew = []
@@ -627,40 +671,39 @@ for (let i = 0; i < 5; i++) {
     scene.add(slnew[i])
 }
 
-// gui.add(spotlightLight, 'intensity').min(0).max(10).step(0.01).name('Spotlight intensity')
-// const parameters = {
-//     color: 0xff0000
-// }
-// gui.addColor(parameters, 'color').onChange(() => {
-//     spotlightLight.color.set(parameters.color)
-// })
+if (!spotlightsON) {
+    const groupSceneSpotlight = new THREE.Group()
+    const groupSpotlight = new THREE.Group()
+    MakeSpotlight(groupSpotlight, 0, 10.65, 9.65, -a90 - a45, 0, 0, 2)
+    sl[4].position.y = 1000
 
+    const vectorOfLooking = new THREE.Vector3(0, 1, 0)
+    const scenerectAreaLight = new THREE.RectAreaLight(0xffffff, 2, 0.5, 0.5)
+    scenerectAreaLight.position.set(0, 0.21, 0)
+    scenerectAreaLight.rotation.set(a180, 0, 0)
+    scenerectAreaLight.lookAt(vectorOfLooking)
+    const rectAreaLightHelper = new RectAreaLightHelper(scenerectAreaLight)
 
+    const sceneSpotlight = new THREE.SpotLight(0xffffff, 2, 100, a30 * 2, 0.15, 0)
+    sceneSpotlight.castShadow = true
+    sceneSpotlight.position.set(0, 0, 0)
+    sceneSpotlight.shadow.mapSize.width = 1024
+    sceneSpotlight.shadow.mapSize.height = 1024
+    sceneSpotlight.shadow.camera.fov = 30
+    sceneSpotlight.shadow.camera.near = 1
+    sceneSpotlight.shadow.camera.far = 6
+    sceneSpotlight.target.position.set(0, 1, 0)
 
+    groupSpotlight.rotation.set(-a90 - a45, 0, 0)
+    groupSpotlight.scale.set(2, 2, 2)
+    groupSpotlight.add(sceneSpotlight, scenerectAreaLight, sceneSpotlight.target, rectAreaLightHelper)
 
+    groupSceneSpotlight.add(groupSpotlight)
+    groupSceneSpotlight.position.set(0, 10.8, 9.65)
+    scene.add(groupSceneSpotlight)
 
-// GUI =======================================================================================================
-// const parameters = {
-//     color: 0xff0000,
-//     spin: () => {
-//         gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + Math.PI * 2 })
-//     }
-// }
-
-// const geometry = new THREE.BoxGeometry(1, 1, 1)
-// const material = new THREE.MeshBasicMaterial({ color: parameters.color })
-// const mesh = new THREE.Mesh(geometry, material)
-// scene.add(mesh)
-
-// const gui = new dat.GUI({ width: 400 })
-//     // gui.add(mesh.position, 'y', -3, 3, 0.01)
-// gui.add(mesh.position, 'y').min(-3).max(3).step(0.01).name('elevation')
-// gui.add(mesh, 'visible')
-// gui.add(material, 'wireframe')
-// gui.addColor(parameters, 'color').onChange(() => {
-//     material.color.set(parameters.color)
-// })
-// gui.add(parameters, 'spin')
+    gui.add(groupSceneSpotlight.rotation, 'y').min(-a30 * 2).max(a30 * 2).step(0.01).name('Single spotlight rotation')
+}
 
 
 
@@ -679,6 +722,8 @@ const renderer = new THREE.WebGLRenderer({
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.shadowMap.enabled = true
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
 // Resize Window
 window.addEventListener('resize', () => {
@@ -739,21 +784,21 @@ const clock = new THREE.Clock()
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 
-var speedcontrol = new function() {
-    this.rotationSpeed = 0.5;
+// GUI parametres
+if (spotlightsON) {
+    // регулировка скорости вращения прожекторов
+    var speedcontrol = new function() {
+        this.rotationSpeed = 0.5;
+    }
+    gui.add(speedcontrol, 'rotationSpeed', 0, 1).name('Spotlight rotation speed');
+
+    // регулировка интенсивности прожекторов
+    var spotlightintensity = new function() {
+        this.intensity = 3;
+    }
+    gui.add(spotlightintensity, 'intensity', 1, 5).name('Spotlight intensity');
+
 }
-
-gui.add(speedcontrol, 'rotationSpeed', 0, 1).name('Spotlight rotation speed');
-
-var spotlightintensity = new function() {
-    this.intensity = 3;
-}
-
-gui.add(spotlightintensity, 'intensity', 0, 5).name('Spotlight intensity');
-
-//gui.add(sl[0].getObjectById(2664), 'intensity').min(0).max(5).step(0.01).name('spotlightLight intensity')
-//console.log(sl[0].getObjectByName('SLname')['intensity'])
-
 
 const tick = () => {
     const elapsedTime = clock.getElapsedTime()
@@ -761,11 +806,12 @@ const tick = () => {
     // Update camera
 
     // Update objecs
-    const XrotationCoef = speedcontrol.rotationSpeed * Math.sin(elapsedTime)
-    const ZrotationCoef = speedcontrol.rotationSpeed * Math.cos(elapsedTime)
-    const SLintensity = spotlightintensity.intensity
 
     if (spotlightsON) {
+        const XrotationCoef = speedcontrol.rotationSpeed * Math.sin(elapsedTime)
+        const ZrotationCoef = speedcontrol.rotationSpeed * Math.cos(elapsedTime)
+        const SLintensity = spotlightintensity.intensity
+
         sl[0].rotation.x = -XrotationCoef * 0.8
         sl[0].rotation.z = -ZrotationCoef
         sl[0].getObjectByName('SLname')['intensity'] = SLintensity
@@ -817,6 +863,10 @@ const tick = () => {
         slnew[4].rotation.z = ZrotationCoef * 0.8
         slnew[4].getObjectByName('SLname')['intensity'] = SLintensity
         slnew[4].getObjectByName('rectALname')['intensity'] = SLintensity + 1
+
+    }
+
+    if (!spotlightsON) {
 
     }
 
