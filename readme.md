@@ -1,4 +1,4 @@
-# Three.js Journey
+# Rock Scene Three.js project
 
 ## Setup
 Download [Node.js](https://nodejs.org/en/download/).
