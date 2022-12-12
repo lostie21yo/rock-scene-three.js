@@ -1,7 +1,7 @@
 # Rock Scene Three.js project
 
 ## Open
-You can open the project online via this link [Rock Scene Three.js project] (https://sprightly-youtiao-5d542e.netlify.app/)
+You can open the project online via this link [Rock Scene Three.js project](https://sprightly-youtiao-5d542e.netlify.app/)
 
 ## Setup locally
 Download [Node.js](https://nodejs.org/en/download/).
