@@ -1,6 +1,9 @@
 # Rock Scene Three.js project
 
-## Setup
+## Open
+https://sprightly-youtiao-5d542e.netlify.app/
+
+## Setup locally
 Download [Node.js](https://nodejs.org/en/download/).
 Run this followed commands:
 
