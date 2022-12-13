@@ -402,7 +402,7 @@ function MakeAcoustic() {
         cap1.position.set(0, -0.25 * Sc, 0.38 * Sc)
         groupDynamic1.add(cap1, diffuser1)
         dynamicTimeline1.to(groupDynamic1.position, { z: groupDynamic1.position.z + 0.04, duration: 0.1 });
-        dynamicTimeline1.to(groupDynamic1.position, { z: groupDynamic1.position.z + 0.04, duration: 0.1 });
+        dynamicTimeline1.to(groupDynamic1.position, { z: groupDynamic1.position.z, duration: 0.1 });
 
         const groupDynamic2 = new THREE.Group()
         const guba2 = new THREE.Mesh(new THREE.TorusGeometry(0.2 * Sc, 0.04 * Sc, 16, 32), blackLeather)
@@ -412,8 +412,8 @@ function MakeAcoustic() {
         const cap2 = new THREE.Mesh(new THREE.SphereGeometry(0.08 * Sc, 16, 16), blackLeather)
         cap2.position.set(-0.2 * Sc, 0.42 * Sc, 0.45 * Sc)
         groupDynamic2.add(cap2, diffuser2)
-        dynamicTimeline2.to(groupDynamic2.position, { z: groupDynamic2.position.z + 0.02, duration: 0.05 });
-        dynamicTimeline2.to(groupDynamic2.position, { z: groupDynamic2.position.z + 0.02, duration: 0.05 });
+        dynamicTimeline2.to(groupDynamic2.position, { z: groupDynamic2.position.z + 0.015, duration: 0.05 });
+        dynamicTimeline2.to(groupDynamic2.position, { z: groupDynamic2.position.z, duration: 0.05 });
 
         const guba3 = new THREE.Mesh(new THREE.TorusGeometry(0.12 * Sc, 0.03 * Sc, 16, 32), blackLeather)
         guba3.position.set(0.25 * Sc, 0.42 * Sc, 0.5 * Sc)
@@ -699,7 +699,7 @@ if (!spotlightsON) {
     groupSpotlight.add(sceneSpotlight, scenerectAreaLight, sceneSpotlight.target, rectAreaLightHelper)
 
     groupSceneSpotlight.add(groupSpotlight)
-    groupSceneSpotlight.position.set(0, 10.8, 9.65)
+    groupSceneSpotlight.position.set(0, 11.2, 9.65)
     scene.add(groupSceneSpotlight)
 
     gui.add(groupSceneSpotlight.rotation, 'y').min(-a30 * 2).max(a30 * 2).step(0.01).name('Single spotlight rotation')
