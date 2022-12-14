@@ -215,30 +215,66 @@ MakeFloor()
 
 
 // Стены + 3D текст 
+const video = document.getElementById('video');
+const wallPaper = new THREE.VideoTexture(video);
+wallPaper.minFilter = THREE.NearestFilter
+wallPaper.magFilter = THREE.NearestFilter
+window.onload = function() {
+    document.getElementById('video').play();
+};
+
 function MakeWalls() {
-    const wallPaper = textureLoader.load('/textures/wallpaper.jpg')
-    const backWallmaterial = new THREE.MeshStandardMaterial({ map: wallPaper })
-    backWallmaterial.roughness = 0.8
-    const frontWall = new THREE.Mesh(
-        new THREE.BoxGeometry(28, 10, 1),
-        backWallmaterial
+    //const wallPaper = textureLoader.load('/textures/wallpaper.jpg')
+    const frontWallMaterial1 = new THREE.MeshBasicMaterial({ color: 'black' })
+    const frontWallMaterial2 = new THREE.MeshBasicMaterial({ map: wallPaper, toneMapped: false })
+
+    frontWallMaterial1.roughness = 0.8
+    const frontWallblack = new THREE.Mesh(
+        new THREE.PlaneGeometry(26, 7),
+        frontWallMaterial1
     )
-    frontWall.receiveShadow = true
-    frontWall.castShadow = true
-    frontWall.position.set(0, 4, -3)
-        // colorTexture.wrapS = THREE.MirroredRepeatWrapping
-        // colorTexture.wrapT = THREE.MirroredRepeatWrapping
-        // colorTexture.repeat.x = 3
-        // colorTexture.repeat.y = 2
-        // colorTexture.offset.x = 0.5
-        // colorTexture.offset.y = 0.5
-        // colorTexture.rotation= Math.PI * 0.25
-        // colorTexture.center.x= 0.5
-        // colorTexture.center.y= 0.5
+    const frontWallvideo = new THREE.Mesh(
+        new THREE.PlaneGeometry(16, 7),
+        frontWallMaterial2
+    )
+
+    frontWallblack.receiveShadow = true
+    frontWallblack.castShadow = true
+    frontWallblack.position.set(0, 4.5, -2)
+
+    frontWallvideo.receiveShadow = true
+    frontWallvideo.castShadow = true
+    frontWallvideo.position.set(0, 4.5, -1.95)
+
+    const frontWallleftborder = new THREE.Mesh(
+        new THREE.BoxGeometry(0.2, 7, 0.2),
+        blackLeather
+    )
+    frontWallleftborder.position.set(-8, 4.5, -1.95)
+    const frontWallrightborder = new THREE.Mesh(
+        new THREE.BoxGeometry(0.2, 7, 0.2),
+        blackLeather
+    )
+    frontWallrightborder.position.set(8, 4.5, -1.95)
+
+    // colorTexture.wrapS = THREE.MirroredRepeatWrapping
+    // colorTexture.wrapT = THREE.MirroredRepeatWrapping
+    // colorTexture.repeat.x = 3
+    // colorTexture.repeat.y = 2
+    // colorTexture.offset.x = 0.5
+    // colorTexture.offset.y = 0.5
+    // colorTexture.rotation= Math.PI * 0.25
+    // colorTexture.center.x= 0.5
+    // colorTexture.center.y= 0.5
 
     //colorTexture.generateMipmaps = false // разгрузка gpu
     //colorTexture.minFilter = THREE.NearestFilter
     wallPaper.magFilter = THREE.NearestFilter
+
+    const upperWall = new THREE.Mesh(new THREE.BoxGeometry(31, 2, 16), ruberoidMaterial)
+    upperWall.position.set(0, 9, -9)
+    upperWall.receiveShadow = true
+    upperWall.castShadow = true
 
     // Текст на стене
     const fontLoader = new FontLoader()
@@ -256,20 +292,16 @@ function MakeWalls() {
             bevelSegments: 5,
         })
 
-        const matcapTexture = textureLoader.load('/textures/matcaps/8.png')
-        const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
+        const matcapTexture = textureLoader.load('/textures/matcaps/2.png')
+        const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture, color: "red" })
         const text = new THREE.Mesh(textGeometry, material)
         textGeometry.center()
         textGeometry.receiveShadow = true
         textGeometry.castShadow = true
-        text.position.set(0, frontWall.position.y + 2.5, frontWall.position.z + 0.6)
+        text.position.set(0, upperWall.position.y, upperWall.position.z + 8.1)
         scene.add(text)
     })
 
-    const upperWall = new THREE.Mesh(new THREE.BoxGeometry(31, 2, 16), ruberoidMaterial)
-    upperWall.position.set(0, 9, -9)
-    upperWall.receiveShadow = true
-    upperWall.castShadow = true
 
     const leftWall = new THREE.Mesh(new THREE.BoxGeometry(2, 11, 15), wallMaterial)
     leftWall.position.set(14, 4, -9)
@@ -286,7 +318,7 @@ function MakeWalls() {
     backWall.receiveShadow = true
     backWall.castShadow = true
 
-    scene.add(frontWall, upperWall, leftWall, rightWall, backWall)
+    scene.add(frontWallblack, frontWallvideo, frontWallleftborder, frontWallrightborder, upperWall, leftWall, rightWall, backWall)
 }
 MakeWalls()
 
@@ -709,7 +741,7 @@ if (!spotlightsON) {
 
 
 
-// CAMERA & RENDER & WINDOW ==============================================================================================
+// CAMERA & RENDER & WINDOW & EVENT LISTENER =============================================================
 // Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 1, 1000)
 camera.position.set(0, 12, 25)
@@ -740,6 +772,16 @@ window.addEventListener('resize', () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 
+// Single Click: Turn ON the music
+var htmlvideo = document.getElementsByTagName('video')[0]
+var firstClick = false
+if (!firstClick) {
+    window.addEventListener('click', () => {
+        htmlvideo.muted = false
+    })
+}
+gui.add(htmlvideo, 'volume', 0, 1).name('Music volume')
+
 // Double Click Fullscreen
 window.addEventListener('dblclick', () => {
 
@@ -752,6 +794,7 @@ window.addEventListener('dblclick', () => {
         } else if (canvas.webkitRequestFullscreen) {
             canvas.webkitRequestFullscreen()
         }
+
 
     } else {
         if (document.exitFullscreen) {
@@ -875,6 +918,9 @@ const tick = () => {
 
     // Update controls
     controls.update()
+
+    //videoTextureUpdate
+    wallPaper.needsUpdate = true
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
