@@ -1,4 +1,5 @@
 # Rock Scene Three.js project
+The Rock Scene 3D interactive project using Three.js. Currently unavailable.
 
 ## Open
 You can open the project online via this link [Rock Scene Three.js project](https://sprightly-youtiao-5d542e.netlify.app/)
